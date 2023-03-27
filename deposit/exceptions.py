@@ -1,0 +1,2 @@
+class DepositApiException(Exception):
+    pass
