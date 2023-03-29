@@ -1,5 +1,5 @@
-from typing import List, Dict
-from deposit.enum import Status
+from typing import List, Dict, Union
+from deposit.enum import Status, ExperimentType, EMSubType
 from datetime import datetime
 
 
@@ -24,7 +24,7 @@ class Response:
 
 
 class Experiment:
-    def __init__(self, type: str, subtype: str = None, related_emdb: str = None, related_bmrb: str = None):
+    def __init__(self, exp_type: Union[ExperimentType, str], subtype: Union[EMSubType, str] = None, related_emdb: str = None, related_bmrb: str = None):
         """
         Constructor for Experiment
         :param type:
@@ -32,10 +32,27 @@ class Experiment:
         :param related_emdb:
         :param related_bmrb:
         """
-        self.type = str(type)
-        self.subtype = str(subtype)
+        self.type = None
+        self.subtype = None
         self.related_emdb = str(related_emdb)
         self.related_bmrb = str(related_bmrb)
+
+        if type(exp_type) == ExperimentType:
+            self.type = exp_type
+        elif exp_type:
+            self.type = ExperimentType(exp_type)
+        if type(subtype) == EMSubType:
+            self.subtype = subtype
+        elif subtype:
+            self.subtype = EMSubType(subtype)
+
+    def json(self):
+        json_object = self.__dict__.copy()
+        if self.type:
+            json_object['type'] = self.type.name
+        if self.subtype:
+            json_object['subtype'] = self.subtype.name
+        return json_object
 
 class DepositError:
     def __init__(self, code: str, message: str, extras):
@@ -48,6 +65,9 @@ class DepositError:
         self.code = str(code)
         self.message = str(message)
         self.extras = extras
+
+    def json(self):
+        return self.__dict__.copy()
 
 class Deposit:
     def __init__(self, email: str, id: str, entry_id: str, title: str, created: str, last_login: str, site: str, status: Status, experiments: List = None, errors: List = None):
@@ -72,16 +92,30 @@ class Deposit:
         self.last_login = datetime.fromisoformat(last_login)
         self.site = str(site)
         self.status = getattr(Status, status)
+        self.experiments = []
+        self.errors = []
 
         if experiments:
-            self.experiments = [Experiment(**exp) for exp in experiments]
-        else:
-            self.experiments = []
+            for exp in experiments:
+                #Replace reserved work type
+                if "type" in exp:
+                    exp["exp_type"] = exp.pop("type")
+                self.experiments.append(Experiment(**exp))
         if errors:
-            self.errors = [DepositError(**error) for error in errors]
-        else:
-            self.errors = []
+            for error in errors:
+                self.errors.append(DepositError(**error))
 
     def __str__(self):
         return f"ID: {self.dep_id}\nE-mail: {self.email}\nEntry ID: {self.entry_id}\nTitle: {self.title}\nCreated: {self.created}\nLast login: {self.last_login}\nSite: {self.site}\nStatus: {self.status}\nExperiments: {self.experiments}\nErrors: {self.errors}"
 
+    def json(self):
+        json_object = self.__dict__.copy()
+        json_object['experiments'] = []
+        json_object['errors'] = []
+        json_object['status'] = self.status.name
+        for experiment in self.experiments:
+            json_object['experiments'].append(experiment.json())
+        for error in self.errors:
+            json_object['errors'].append(error.json())
+
+        return json_object
