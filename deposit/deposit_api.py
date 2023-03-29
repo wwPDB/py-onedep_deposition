@@ -1,8 +1,9 @@
 import logging
+from typing import Union
 from deposit.rest_adapter import RestAdapter
 from deposit.exceptions import DepositApiException
 from deposit.models import *
-from deposit.enum import Country
+from deposit.enum import Country, EMSubType
 
 
 class DepositApi:
@@ -23,7 +24,7 @@ class DepositApi:
         response = self.rest_adapter.post("depositions/new", data=data)
         return response
 
-    def create_em_deposition(self, email: str, users : List[str], country : Country, subtype: str, related_emdb: str = None, password : str = ""):
+    def create_em_deposition(self, email: str, users : List[str], country : Country, subtype: Union[EMSubType, str], related_emdb: str = None, password : str = ""):
         experiment = Experiment(exp_type="em", subtype=subtype, related_emdb=related_emdb)
         response = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
         return response
