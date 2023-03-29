@@ -49,9 +49,9 @@ class Experiment:
     def json(self):
         json_object = self.__dict__.copy()
         if self.type:
-            json_object['type'] = self.type.name
+            json_object['type'] = self.type.value
         if self.subtype:
-            json_object['subtype'] = self.subtype.name
+            json_object['subtype'] = self.subtype.value
         return json_object
 
 class DepositError:

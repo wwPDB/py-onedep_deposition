@@ -24,7 +24,7 @@ class DepositApi:
         return response
 
     def create_em_deposition(self, email: str, users : List[str], country : Country, subtype: str, related_emdb: str = None, password : str = ""):
-        experiment = Experiment(type="em", subtype=subtype, related_emdb=related_emdb)
+        experiment = Experiment(exp_type="em", subtype=subtype, related_emdb=related_emdb)
         response = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
         return response
     #TODO: Create specific depositions passing the experiments as a parameter

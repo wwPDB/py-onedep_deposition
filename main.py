@@ -9,14 +9,14 @@ VERIFY_SSL = False
 
 def debug_rest_adapter():
     api = DepositApi(hostname=BASE_URL, ssl_verify=False, api_key=API_KEY)
-    deposition = api.get_deposition("D_8233000014")
+    # deposition = api.get_deposition("D_8233000014")
     # print(deposition)
 
     # New deposition
     # experiments = deposition.experiments
     # new_deposition = api.create_deposition("neli@ebi.ac.uk", ["0009-0005-7979-7466"], "United Kingdom", experiments)
-    # new_deposition = api.create_em_deposition("neli@ebi.ac.uk", ["0009-0005-7979-7466"], Country.UK, subtype="single")
-    print(deposition.json())
+    new_deposition = api.create_em_deposition("neli@ebi.ac.uk", ["0009-0005-7979-7466"], Country.UK, subtype="single")
+    print(new_deposition)
 
 if __name__ == '__main__':
     debug_rest_adapter()
