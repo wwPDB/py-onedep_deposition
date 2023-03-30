@@ -70,7 +70,7 @@ class DepositError:
         return self.__dict__.copy()
 
 class Deposit:
-    def __init__(self, email: str, id: str, entry_id: str, title: str, created: str, last_login: str, site: str, status: Status, experiments: List = None, errors: List = None):
+    def __init__(self, email: str, id: str, entry_id: str, title: str, created: str, last_login: str, site: str, status: Status, experiments: List = None, errors: List = None, site_url: str = None):
         """
         Constructor for Deposit
         :param email:
@@ -83,6 +83,7 @@ class Deposit:
         :param status:
         :param experiments:
         :param errors:
+        :param site_url
         """
         self.email = str(email)
         self.dep_id = str(id)
@@ -94,10 +95,11 @@ class Deposit:
         self.status = getattr(Status, status)
         self.experiments = []
         self.errors = []
+        self.site_url = str(site_url)
 
         if experiments:
             for exp in experiments:
-                #Replace reserved work type
+                # Replace reserved work type
                 if "type" in exp:
                     exp["exp_type"] = exp.pop("type")
                 self.experiments.append(Experiment(**exp))
@@ -106,7 +108,7 @@ class Deposit:
                 self.errors.append(DepositError(**error))
 
     def __str__(self):
-        return f"ID: {self.dep_id}\nE-mail: {self.email}\nEntry ID: {self.entry_id}\nTitle: {self.title}\nCreated: {self.created}\nLast login: {self.last_login}\nSite: {self.site}\nStatus: {self.status}\nExperiments: {self.experiments}\nErrors: {self.errors}"
+        return f"ID: {self.dep_id}\nE-mail: {self.email}\nEntry ID: {self.entry_id}\nTitle: {self.title}\nCreated: {self.created}\nLast login: {self.last_login}\nSite: {self.site}\nStatus: {self.status}\nSite URL: {self.site_url}\nExperiments: {self.experiments}\nErrors: {self.errors}"
 
     def json(self):
         json_object = self.__dict__.copy()

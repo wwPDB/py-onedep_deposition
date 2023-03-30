@@ -152,6 +152,7 @@ class DepositApi:
         Get all depositions from an user
         :return: List[Deposit]
         """
+        # TODO: Currently API returns an extra field: site_url
         depositions = []
         response = self.rest_adapter.get("depositions/")
         for deposition_json in response.data["items"]:
