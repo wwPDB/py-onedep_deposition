@@ -147,7 +147,7 @@ class DepositApi:
         deposit = Deposit(**response.data)
         return deposit
 
-    def get_depositions_by_user(self):
+    def get_all_depositions(self):
         """
         Get all depositions from an user
         :return: List[Deposit]
