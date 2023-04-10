@@ -167,11 +167,31 @@ class DepositApi:
         """
         # TODO: This endpoint is missing
         response = self.rest_adapter.get(f"depositions/{dep_id}/users")
-        print(response)
+        # FIXME
+        return None
+
+    def add_user(self, dep_id: str, orcid: Union[List, str]):
+        """
+        Grant access from given users to deposition
+        :param dep_id: Deposition ID
+        :param orcid: Orcid ID or list of Orcid ids
+        :return: List of depositors
+        """
+        users = []
+        data = []
+        if type(orcid) == str:
+            data.append({'orcid': orcid})
+        elif type(orcid) == list:
+            for orcid_id in orcid:
+                data.append({'orcid': orcid_id})
+        response = self.rest_adapter.post(f"depositions/{dep_id}/users/", data=data)
+        for user_json in response.data:
+            users.append(Depositor(**user_json))
+
+        return users
 
 
     # TODO: Add get user endpoint
-    # TODO: Add add user endpoint
     # TODO: Add remove user endpoint
     # TODO: Add get file endpoints
     # TODO: Add upload files endpoint

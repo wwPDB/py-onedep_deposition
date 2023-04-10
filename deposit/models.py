@@ -24,7 +24,8 @@ class Response:
 
 
 class Experiment:
-    def __init__(self, exp_type: Union[ExperimentType, str], subtype: Union[EMSubType, str] = None, related_emdb: str = None, related_bmrb: str = None):
+    def __init__(self, exp_type: Union[ExperimentType, str], subtype: Union[EMSubType, str] = None,
+                 related_emdb: str = None, related_bmrb: str = None):
         """
         Constructor for Experiment
         :param type:
@@ -54,6 +55,7 @@ class Experiment:
             json_object['subtype'] = self.subtype.value
         return json_object
 
+
 class DepositError:
     def __init__(self, code: str, message: str, extras):
         """
@@ -69,8 +71,10 @@ class DepositError:
     def json(self):
         return self.__dict__.copy()
 
+
 class Deposit:
-    def __init__(self, email: str, id: str, entry_id: str, title: str, created: str, last_login: str, site: str, status: Status, experiments: List = None, errors: List = None, site_url: str = None):
+    def __init__(self, email: str, id: str, entry_id: str, title: str, created: str, last_login: str, site: str,
+                 status: Status, experiments: List = None, errors: List = None, site_url: str = None):
         """
         Constructor for Deposit
         :param email:
@@ -122,13 +126,15 @@ class Deposit:
 
         return json_object
 
+
 class Depositor:
-    def __init__(self, orcid: str, id: int, full_name: str, last_login: str, date_joined: str, depositions: List[Deposit] = None):
+    def __init__(self, orcid: str, id: int, full_name: str, last_login: str = None, date_joined: str = None,
+                 depositions: List[Deposit] = None):
         self.orcid = str(orcid)
         self.id = int(id)
         self.full_name = str(full_name),
-        self.last_login = datetime.fromisoformat(last_login)
-        self.date_joined = datetime.fromisoformat(date_joined)
+        self.last_login = datetime.fromisoformat(last_login) if last_login else None
+        self.date_joined = datetime.fromisoformat(date_joined) if date_joined else None
         self.depositions = []
 
         if depositions:

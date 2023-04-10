@@ -1,7 +1,7 @@
 import requests
 import requests.packages
 import logging
-from typing import Dict
+from typing import Dict, Union, List
 from json import JSONDecodeError
 from deposit.exceptions import DepositApiException
 from deposit.models import Response
@@ -70,7 +70,7 @@ class RestAdapter:
         """
         return self._do(http_method='GET', endpoint=endpoint, params=params)
 
-    def post(self, endpoint: str, params: Dict = None, data: Dict = None) -> Response:
+    def post(self, endpoint: str, params: Dict = None, data: Union[Dict, List] = None) -> Response:
         """
         Perform GET requests
         :param endpoint: endpoint path
