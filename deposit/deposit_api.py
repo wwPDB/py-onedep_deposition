@@ -152,12 +152,31 @@ class DepositApi:
         Get all depositions from an user
         :return: List[Deposit]
         """
-        # TODO: Currently API returns an extra field: site_url
         depositions = []
         response = self.rest_adapter.get("depositions/")
         for deposition_json in response.data["items"]:
             deposition = Deposit(**deposition_json)
             depositions.append(deposition)
         return depositions
+
+    def get_users(self, dep_id: str):
+        """
+        Get users from deposition
+        :param dep_id:
+        :return: Depositor
+        """
+        # TODO: This endpoint is missing
+        response = self.rest_adapter.get(f"depositions/{dep_id}/users")
+        print(response)
+
+
+    # TODO: Add get user endpoint
+    # TODO: Add add user endpoint
+    # TODO: Add remove user endpoint
+    # TODO: Add get file endpoints
+    # TODO: Add upload files endpoint
+    # TODO: Add process files endpoint
+    # TODO: Think and add composite endpoints
+
 
 

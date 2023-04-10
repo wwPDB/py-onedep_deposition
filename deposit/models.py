@@ -121,3 +121,28 @@ class Deposit:
             json_object['errors'].append(error.json())
 
         return json_object
+
+class Depositor:
+    def __init__(self, orcid: str, id: int, full_name: str, last_login: str, date_joined: str, depositions: List[Deposit] = None):
+        self.orcid = str(orcid)
+        self.id = int(id)
+        self.full_name = str(full_name),
+        self.last_login = datetime.fromisoformat(last_login)
+        self.date_joined = datetime.fromisoformat(date_joined)
+        self.depositions = []
+
+        if depositions:
+            for deposition in depositions:
+                depositions.append(**deposition)
+
+    def __str__(self):
+        return f"Name: {self.full_name} [{self.id}]\nORCID: {self.orcid}\nDate joined: {self.date_joined}\nLast login: {self.last_login}\nDepositions: {self.depositions}"
+
+    def json(self):
+        json_object = self.__dict__.copy()
+        json_object["depositions"] = []
+
+        for deposition in self.depositions:
+            json_object["depositions"].append(deposition.json())
+
+        return json_object
