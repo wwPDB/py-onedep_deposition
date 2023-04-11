@@ -11,11 +11,13 @@ def debug_rest_adapter():
     api = DepositApi(hostname=BASE_URL, ssl_verify=False, api_key=API_KEY)
     # depositions = api.get_all_depositions()
 
-    users = api.add_user("D_8233000014", orcid="0000-0001-6466-8083")
-    print(users)
+    # users = api.add_user("D_8233000014", orcid="0000-0001-6466-8083")
+    # print(users)
 
-    deposition = api.get_deposition("D_8233000014")
-    print(deposition)
+    deleted_user = api.remove_user("D_8233000014", orcid="0000-0001-6466-8083")
+
+    # deposition = api.get_deposition("D_8233000014")
+    # print(deposition)
 
     # New deposition
     # experiments = deposition.experiments

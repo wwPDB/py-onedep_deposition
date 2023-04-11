@@ -190,11 +190,22 @@ class DepositApi:
 
         return users
 
+    def remove_user(self, dep_id: str, orcid: str):
+        """
+        Remove access from an user to a deposition
+        :param dep_id: Deposition id
+        :param orcid: Orcid id
+        :return: Depositor
+        """
+        # TODO: This endpoint is not returning a message
+        response = self.rest_adapter.delete(f"depositions/{dep_id}/users/{orcid}")
+        # FIXME
+        return None
 
     # TODO: Add get user endpoint
     # TODO: Add remove user endpoint
-    # TODO: Add get file endpoints
     # TODO: Add upload files endpoint
+    # TODO: Add get file endpoints
     # TODO: Add process files endpoint
     # TODO: Think and add composite endpoints
 
