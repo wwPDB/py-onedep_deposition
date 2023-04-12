@@ -22,12 +22,13 @@ def debug_rest_adapter():
     # New deposition
     # experiments = deposition.experiments
     # new_deposition = api.create_deposition("neli@ebi.ac.uk", ["0009-0005-7979-7466"], "United Kingdom", experiments)
-    # new_deposition = api.create_em_deposition("neli@ebi.ac.uk", ["0009-0005-7979-7466"], Country.UK, subtype=EMSubType.SPA)
+    new_deposition = api.create_em_deposition("neli@ebi.ac.uk", ["0009-0005-7979-7466"], Country.UK, subtype=EMSubType.SPA)
+    print(new_deposition)
     # for deposition in depositions:
     #     print(deposition)
 
     # Filesn
-    file = api.upload_file("D_8233000014", "/Users/neli/Downloads/8f2i.cif", "co-pdb")
+    # file = api.upload_file("D_8233000014", "/Users/neli/Downloads/8f2i.cif", "co-pdb")
 
 if __name__ == '__main__':
     debug_rest_adapter()

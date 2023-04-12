@@ -46,8 +46,12 @@ class RestAdapter:
         log_line_post = ', '.join((log_line_pre, "success={}, status_code={}, message={}"))
         try:
             self._logger.debug(msg=log_line_pre)
-            response = requests.request(method=http_method, url=full_url, verify=self._ssl_verify, headers=headers,
-                                        params=params, data=data, files=files)
+            if headers['Content-Type'] == 'application/json':
+                response = requests.request(method=http_method, url=full_url, verify=self._ssl_verify, headers=headers,
+                                            params=params, json=data, files=files)
+            else:
+                response = requests.request(method=http_method, url=full_url, verify=self._ssl_verify, headers=headers,
+                                            params=params, data=data, files=files)
         except requests.exceptions.RequestException as e:
             self._logger.error(msg=(str(e)))
             raise DepositApiException("Failed to access the API")

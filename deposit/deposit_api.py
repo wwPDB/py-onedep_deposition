@@ -22,7 +22,7 @@ class DepositApi:
         """
         self.rest_adapter = RestAdapter(hostname, api_key, ver, ssl_verify, logger)
 
-    def create_deposition(self, email: str, users : List[str], country : Country, experiments : List[Experiment], password : str = ""):
+    def create_deposition(self, email: str, users : List[str], country : Country, experiments : List[Experiment], password : str = "") -> Deposit:
         """
         General method to create a deposition passing an Experiment object
         :param email: User e-mail
@@ -41,9 +41,10 @@ class DepositApi:
         if password:
             data["password"] = password
         response = self.rest_adapter.post("depositions/new", data=data)
-        return response
+        deposit = Deposit(**response.data)
+        return deposit
 
-    def create_em_deposition(self, email: str, users : List[str], country : Country, subtype: Union[EMSubType, str], related_emdb: str = None, password : str = ""):
+    def create_em_deposition(self, email: str, users : List[str], country : Country, subtype: Union[EMSubType, str], related_emdb: str = None, password : str = "") -> Deposit:
         """
         Create an EM deposition
         :param email: User e-mail
@@ -55,10 +56,10 @@ class DepositApi:
         :return: Response
         """
         experiment = Experiment(exp_type="em", subtype=subtype, related_emdb=related_emdb)
-        response = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
-        return response
+        deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
+        return deposit
 
-    def create_xray_deposition(self,  email: str, users : List[str], country : Country, password : str = ""):
+    def create_xray_deposition(self,  email: str, users : List[str], country : Country, password : str = "") -> Deposit:
         """
         Create an XRAY deposition
         :param email: User e-mail
@@ -68,10 +69,10 @@ class DepositApi:
         :return: Response
         """
         experiment = Experiment(exp_type="xray")
-        response = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
-        return response
+        deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
+        return deposit
 
-    def create_fiber_deposition(self,  email: str, users : List[str], country : Country, password : str = ""):
+    def create_fiber_deposition(self,  email: str, users : List[str], country : Country, password : str = "") -> Deposit:
         """
         Create a Fiber diffraction deposition
         :param email: User e-mail
@@ -81,10 +82,10 @@ class DepositApi:
         :return: Response
         """
         experiment = Experiment(exp_type="fiber")
-        response = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
-        return response
+        deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
+        return deposit
 
-    def create_neutron_deposition(self,  email: str, users : List[str], country : Country, password : str = ""):
+    def create_neutron_deposition(self,  email: str, users : List[str], country : Country, password : str = "") -> Deposit:
         """
         Create a Neutron diffraction deposition
         :param email: User e-mail
@@ -94,10 +95,10 @@ class DepositApi:
         :return: Response
         """
         experiment = Experiment(exp_type="neutron")
-        response = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
-        return response
+        deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
+        return deposit
 
-    def create_ec_deposition(self,  email: str, users : List[str], country : Country, password : str = "", related_emdb: str = None):
+    def create_ec_deposition(self,  email: str, users : List[str], country : Country, password : str = "", related_emdb: str = None) -> Deposit:
         """
         Create an Electron crystallography deposition
         :param email: User e-mail
@@ -108,10 +109,10 @@ class DepositApi:
         :return: Response
         """
         experiment = Experiment(exp_type="ec", related_emdb=related_emdb)
-        response = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
-        return response
+        deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
+        return deposit
 
-    def create_nmr_deposition(self,  email: str, users : List[str], country : Country, password : str = "", related_bmrb: str = None):
+    def create_nmr_deposition(self,  email: str, users : List[str], country : Country, password : str = "", related_bmrb: str = None) -> Deposit:
         """
         Create a NMR deposition
         :param email: User e-mail
@@ -122,10 +123,10 @@ class DepositApi:
         :return: Response
         """
         experiment = Experiment(exp_type="nmr", related_bmrb=related_bmrb)
-        response = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
-        return response
+        deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
+        return deposit
 
-    def create_ssnmr_deposition(self,  email: str, users : List[str], country : Country, password : str = "", related_bmrb: str = None):
+    def create_ssnmr_deposition(self,  email: str, users : List[str], country : Country, password : str = "", related_bmrb: str = None) -> Deposit:
         """
         Create a Solid-state NMR E deposition
         :param email: User e-mail
@@ -136,10 +137,10 @@ class DepositApi:
         :return: Response
         """
         experiment = Experiment(exp_type="ssnmr", related_bmrb=related_bmrb)
-        response = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
-        return response
+        deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
+        return deposit
 
-    def get_deposition(self, dep_id: str):
+    def get_deposition(self, dep_id: str) -> Deposit:
         """
         Get deposition from ID
         :param dep_id: Deposition ID
@@ -149,7 +150,7 @@ class DepositApi:
         deposit = Deposit(**response.data)
         return deposit
 
-    def get_all_depositions(self):
+    def get_all_depositions(self) -> List[Deposit]:
         """
         Get all depositions from an user
         :return: List[Deposit]
@@ -172,7 +173,7 @@ class DepositApi:
         # FIXME
         return None
 
-    def add_user(self, dep_id: str, orcid: Union[List, str]):
+    def add_user(self, dep_id: str, orcid: Union[List, str]) -> List[Depositor]:
         """
         Grant access from given users to deposition
         :param dep_id: Deposition ID
