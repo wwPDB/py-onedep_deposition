@@ -1,5 +1,5 @@
 from typing import List, Dict, Union
-from deposit.enum import Status, ExperimentType, EMSubType
+from deposit.enum import Status, ExperimentType, EMSubType, FileType
 from datetime import datetime
 
 
@@ -57,7 +57,7 @@ class Experiment:
 
 
 class DepositError:
-    def __init__(self, code: str, message: str, extras):
+    def __init__(self, code: str, message: str, extras: str = None):
         """
         Constructor for DepositError
         :param code:
@@ -107,6 +107,7 @@ class Deposit:
                 if "type" in exp:
                     exp["exp_type"] = exp.pop("type")
                 self.experiments.append(Experiment(**exp))
+        # FIXME: Error ta vindo so como string
         if errors:
             for error in errors:
                 self.errors.append(DepositError(**error))
@@ -152,3 +153,30 @@ class Depositor:
             json_object["depositions"].append(deposition.json())
 
         return json_object
+
+
+class FileResponse:
+    def __init__(self, id: int, created: str, name: str, file_type: Union[str, FileType], errors: List[str], warnings: List[str]):
+        self.id = int(id)
+        self.name = str(name)
+
+        date_format = "%A, %B %d, %Y %H:%M:%S"
+        self.created = datetime.strptime(created, date_format)
+
+        if type(file_type) == str:
+            self.type = FileType(file_type)
+        else:
+            self.type = file_type
+
+        self.errors = [error for error in errors if error != ""]
+        self.warnings = [warning for warning in warnings if warning != ""]
+
+    def __str__(self):
+        message = f"ID: {self.id}\nCREATED ON: {self.created}\nNAME: {self.name}\nTYPE: {self.type}\nERRORS:\n"
+        for error in self.errors:
+            message += f"  -{error}\n"
+        message += f"\nWARNINGS:\n"
+        for warning in self.warnings:
+            message += f"  -{warning}\n"
+
+        return message

@@ -14,7 +14,7 @@ def debug_rest_adapter():
     # users = api.add_user("D_8233000014", orcid="0000-0001-6466-8083")
     # print(users)
 
-    deleted_user = api.remove_user("D_8233000014", orcid="0000-0001-6466-8083")
+    # deleted_user = api.remove_user("D_8233000014", orcid="0000-0001-6466-8083")
 
     # deposition = api.get_deposition("D_8233000014")
     # print(deposition)
@@ -26,6 +26,8 @@ def debug_rest_adapter():
     # for deposition in depositions:
     #     print(deposition)
 
+    # Filesn
+    file = api.upload_file("D_8233000014", "/Users/neli/Downloads/8f2i.cif", "co-pdb")
 
 if __name__ == '__main__':
     debug_rest_adapter()

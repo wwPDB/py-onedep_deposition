@@ -25,26 +25,29 @@ class RestAdapter:
         if not ssl_verify:
             requests.packages.urllib3.disable_warnings()
 
-    def _do(self, http_method: str, endpoint: str, params: Dict = None, data: Dict = None) -> Response:
+    def _do(self, http_method: str, endpoint: str, params: Dict = None, data: Union[Dict, List] = None, files: Dict = None, content_type: str = "application/json") -> Response:
         """
         Private method to perform API calls
         :param http_method: GET/POST/DELETE
         :param endpoint: endpoint path
         :param params: Dictionary with requests params
         :param data: Dictionary with request data
+        :param files: Files to be uploaded
+        :param content_type Request content type
         :return: API Response
         """
         full_url = self.url + endpoint
         headers = {
-            "Content-Type": "application/json",
             'Authorization': f"Bearer {self._api_key}"
         }
+        if content_type:
+            headers["Content-Type"] = content_type
         log_line_pre = f"method={http_method}, url={full_url}, params={params}"
         log_line_post = ', '.join((log_line_pre, "success={}, status_code={}, message={}"))
         try:
             self._logger.debug(msg=log_line_pre)
             response = requests.request(method=http_method, url=full_url, verify=self._ssl_verify, headers=headers,
-                                        params=params, json=data)
+                                        params=params, data=data, files=files)
         except requests.exceptions.RequestException as e:
             self._logger.error(msg=(str(e)))
             raise DepositApiException("Failed to access the API")
@@ -61,31 +64,35 @@ class RestAdapter:
         self._logger.error(msg=log_line)
         raise DepositApiException(f"{response.status_code}: {response.reason}")
 
-    def get(self, endpoint: str, params: Dict = None) -> Response:
+    def get(self, endpoint: str, params: Dict = None, content_type: str = "application/json") -> Response:
         """
         Perform GET requests
         :param endpoint: endpoint path
         :param params: Dictionary with requests params
+        :param content_type Request content type
         :return: API Response
         """
-        return self._do(http_method='GET', endpoint=endpoint, params=params)
+        return self._do(http_method='GET', endpoint=endpoint, params=params, content_type=content_type)
 
-    def post(self, endpoint: str, params: Dict = None, data: Union[Dict, List] = None) -> Response:
+    def post(self, endpoint: str, params: Dict = None, data: Union[Dict, List] = None, files: Dict = None, content_type: str = "application/json") -> Response:
         """
         Perform GET requests
         :param endpoint: endpoint path
         :param params: Dictionary with requests params
         :param data: Dictionary with requests data
+        :param files: Files to be uploaded
+        :param content_type Request content type
         :return: API response
         """
-        return self._do(http_method='POST', endpoint=endpoint, params=params, data=data)
+        return self._do(http_method='POST', endpoint=endpoint, params=params, data=data, files=files, content_type=content_type)
 
-    def delete(self, endpoint: str, params: Dict = None, data: Dict = None) -> Response:
+    def delete(self, endpoint: str, params: Dict = None, data: Dict = None, content_type: str = "application/json") -> Response:
         """
         Perform DELETE requests
         :param endpoint: endpoint path
         :param params: Dictionary with requests params
         :param data: Dictionary with requests data
+        :param content_type Request content type
         :return: API response
         """
-        return self._do(http_method='DELETE', endpoint=endpoint, params=params, data=data)
+        return self._do(http_method='DELETE', endpoint=endpoint, params=params, data=data, content_type=content_type)

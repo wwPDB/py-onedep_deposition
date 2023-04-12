@@ -3,7 +3,9 @@ from typing import Union
 from deposit.rest_adapter import RestAdapter
 from deposit.exceptions import DepositApiException
 from deposit.models import *
-from deposit.enum import Country, EMSubType
+from deposit.enum import Country, EMSubType, FileType
+import mimetypes
+import os
 
 
 class DepositApi:
@@ -202,9 +204,37 @@ class DepositApi:
         # FIXME
         return None
 
+    def upload_file(self, dep_id: str, file_path: str, file_type: Union[str, FileType]) -> FileResponse:
+        """
+        Upload a file in a deposition
+        :param dep_id: Deposition id
+        :param file_path: File path
+        :param file_type: Deposition file type
+        :return: File response
+        """
+        files = {}
+        file_type_str = file_type
+
+        if type(file_type) == FileType:
+            file_type_str = file_type.value
+
+        mime_type, encoding = mimetypes.guess_type(file_path)
+        file_name = os.path.basename(file_path)
+
+        data = {
+            "name": file_name,
+            "type": file_type_str
+        }
+
+        with open(file_path, "rb") as fp:
+            files["file"] = (file_name, fp, mime_type)
+            response = self.rest_adapter.post(f"depositions/{dep_id}/files/", data=data, files=files, content_type="")
+            response.data["file_type"] = response.data.pop("type")
+
+            return FileResponse(**response.data)
+
     # TODO: Add get user endpoint
     # TODO: Add remove user endpoint
-    # TODO: Add upload files endpoint
     # TODO: Add get file endpoints
     # TODO: Add process files endpoint
     # TODO: Think and add composite endpoints
