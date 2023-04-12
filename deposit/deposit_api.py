@@ -205,7 +205,7 @@ class DepositApi:
         # FIXME
         return None
 
-    def upload_file(self, dep_id: str, file_path: str, file_type: Union[str, FileType]) -> FileResponse:
+    def upload_file(self, dep_id: str, file_path: str, file_type: Union[str, FileType]) -> DepositedFile:
         """
         Upload a file in a deposition
         :param dep_id: Deposition id
@@ -232,11 +232,21 @@ class DepositApi:
             response = self.rest_adapter.post(f"depositions/{dep_id}/files/", data=data, files=files, content_type="")
             response.data["file_type"] = response.data.pop("type")
 
-            return FileResponse(**response.data)
+            return DepositedFile(**response.data)
+
+    def get_files(self, dep_id: str) -> DepositedFilesSet:
+        """
+        Get all files in deposition
+        :param dep_id: Deposition ID
+        :return: List of uploaded files
+        """
+        response = self.rest_adapter.get(f"depositions/{dep_id}/files/")
+        return DepositedFilesSet(**response.data)
 
     # TODO: Add get user endpoint
     # TODO: Add remove user endpoint
-    # TODO: Add get file endpoints
+    # TODO: Add remove files
+    # TODO: Add overwrite parameter to add file
     # TODO: Add process files endpoint
     # TODO: Think and add composite endpoints
 

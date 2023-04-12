@@ -155,8 +155,9 @@ class Depositor:
         return json_object
 
 
-class FileResponse:
-    def __init__(self, id: int, created: str, name: str, file_type: Union[str, FileType], errors: List[str], warnings: List[str]):
+class DepositedFile:
+    def __init__(self, id: int, created: str, name: str, file_type: Union[str, FileType], errors: List[str] = None,
+                 warnings: List[str] = None):
         self.id = int(id)
         self.name = str(name)
 
@@ -168,8 +169,8 @@ class FileResponse:
         else:
             self.type = file_type
 
-        self.errors = [error for error in errors if error != ""]
-        self.warnings = [warning for warning in warnings if warning != ""]
+        self.errors = [error for error in errors if error != ""] if errors else []
+        self.warnings = [warning for warning in warnings if warning != ""] if warnings else []
 
     def __str__(self):
         message = f"ID: {self.id}\nCREATED ON: {self.created}\nNAME: {self.name}\nTYPE: {self.type}\nERRORS:\n"
@@ -180,3 +181,31 @@ class FileResponse:
             message += f"  -{warning}\n"
 
         return message
+
+
+class DepositedFilesSet:
+    def __init__(self, files: List[Dict], errors: List[str] = None, warnings: List[str] = None):
+        self.files = []
+        self.errors = [error for error in errors if error != ""] if errors else []
+        self.warnings = [warning for warning in warnings if warning != ""] if errors else []
+
+        for file in files:
+            file["file_type"] = file.pop("type")
+            self.files.append(DepositedFile(**file))
+
+    def __getitem__(self, index):
+        return self.files[index]
+
+    def __len__(self):
+        return len(self.files)
+
+    def __iter__(self):
+        self.current_index = 0
+        return self
+
+    def __next__(self):
+        if self.current_index < len(self.files):
+            item = self.files[self.current_index]
+            self.current_index += 1
+            return item
+        raise StopIteration
