@@ -243,6 +243,18 @@ class DepositApi:
         response = self.rest_adapter.get(f"depositions/{dep_id}/files/")
         return DepositedFilesSet(**response.data)
 
+    def remove_file(self, dep_id: str, file_id: int):
+        """
+        Remove a file from a deposition
+        :param dep_id: Deposition ID
+        :param file_id: File ID
+        :return: None
+        """
+        response = self.rest_adapter.delete(f"depositions/{dep_id}/files/{file_id}")
+        # FIXME API is returning no content, django redirects to home page, is it expected behaviour? Should be handled by wrapper side?
+        print(response)
+
+
     # TODO: Add get user endpoint
     # TODO: Add remove user endpoint
     # TODO: Add remove files
