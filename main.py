@@ -27,12 +27,10 @@ def debug_rest_adapter():
     #     print(deposition)
 
     # Files
-    # file = api.upload_file("D_8233000014", "/Users/neli/Downloads/8f2i.cif", "co-pdb")
+    file = api.upload_file("D_8233000014", "/Users/neli/Downloads/8f2i.cif", "co-pdb", overwrite=True)
+    # api.remove_file("D_8233000014", 25)
     files = api.get_files("D_8233000014")
     print(len(files))
-    # api.remove_file("D_8233000014", 23)
-    # files = api.get_files("D_8233000014")
-    # print(len(files))
 
 if __name__ == '__main__':
     debug_rest_adapter()

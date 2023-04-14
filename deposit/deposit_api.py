@@ -200,17 +200,16 @@ class DepositApi:
         :param orcid: Orcid id
         :return: Depositor
         """
-        # TODO: This endpoint is not returning a message
-        response = self.rest_adapter.delete(f"depositions/{dep_id}/users/{orcid}")
-        # FIXME
-        return None
+        self.rest_adapter.delete(f"depositions/{dep_id}/users/{orcid}")
+        return True
 
-    def upload_file(self, dep_id: str, file_path: str, file_type: Union[str, FileType]) -> DepositedFile:
+    def upload_file(self, dep_id: str, file_path: str, file_type: Union[str, FileType], overwrite: bool = False) -> DepositedFile:
         """
         Upload a file in a deposition
         :param dep_id: Deposition id
         :param file_path: File path
         :param file_type: Deposition file type
+        :param overwrite: If true, overwrite all previously uploaded file with the same type
         :return: File response
         """
         files = {}
@@ -226,6 +225,12 @@ class DepositApi:
             "name": file_name,
             "type": file_type_str
         }
+
+        if overwrite:
+            deposited_files = self.get_files(dep_id)
+            for file in deposited_files:
+                if file.type.value == file_type_str:
+                    self.remove_file(dep_id, file.id)
 
         with open(file_path, "rb") as fp:
             files["file"] = (file_name, fp, mime_type)
@@ -250,17 +255,15 @@ class DepositApi:
         :param file_id: File ID
         :return: None
         """
-        response = self.rest_adapter.delete(f"depositions/{dep_id}/files/{file_id}")
-        # FIXME API is returning no content, django redirects to home page, is it expected behaviour? Should be handled by wrapper side?
-        print(response)
+        self.rest_adapter.delete(f"depositions/{dep_id}/files/{file_id}")
+        return True
 
 
     # TODO: Add get user endpoint
-    # TODO: Add remove user endpoint
-    # TODO: Add remove files
-    # TODO: Add overwrite parameter to add file
     # TODO: Add process files endpoint
     # TODO: Think and add composite endpoints
+    # TODO: Add more log
+    # TODO: Add unit tests
 
 
 

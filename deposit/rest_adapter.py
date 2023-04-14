@@ -46,7 +46,7 @@ class RestAdapter:
         log_line_post = ', '.join((log_line_pre, "success={}, status_code={}, message={}"))
         try:
             self._logger.debug(msg=log_line_pre)
-            if headers['Content-Type'] == 'application/json':
+            if 'Content-Type' in headers and headers['Content-Type'] == 'application/json':
                 response = requests.request(method=http_method, url=full_url, verify=self._ssl_verify, headers=headers,
                                             params=params, json=data, files=files)
             else:
@@ -55,6 +55,9 @@ class RestAdapter:
         except requests.exceptions.RequestException as e:
             self._logger.error(msg=(str(e)))
             raise DepositApiException("Failed to access the API")
+        if response.status_code == 204:
+            # Django is redirecting 204 to OneDep home page
+            return Response(204)
         try:
             data_out = response.json()
         except (ValueError, JSONDecodeError) as e:
