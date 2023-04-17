@@ -47,6 +47,16 @@ class Experiment:
         elif subtype:
             self.subtype = EMSubType(subtype)
 
+    def __str__(self):
+        message = f"TYPE: {self.type}"
+        if self.subtype:
+            message += f" ({self.subtype})"
+        if self.related_emdb:
+            message += f" [{self.related_emdb}]"
+        elif self.related_bmrb:
+            message += f" [{self.related_bmrb}]"
+        return message
+
     def json(self):
         json_object = self.__dict__.copy()
         if self.type:

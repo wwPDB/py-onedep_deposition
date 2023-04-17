@@ -17,6 +17,7 @@ def debug_rest_adapter():
     # deleted_user = api.remove_user("D_8233000014", orcid="0000-0001-6466-8083")
 
     # deposition = api.get_deposition("D_8233000014")
+    # print(deposition.experiments[0])
     # print(deposition)
 
     # New deposition
@@ -33,6 +34,9 @@ def debug_rest_adapter():
     # print(len(files))
 
     # Status
+    # response = api.process("D_8233000014")
+    # print(response)
+
     status = api.get_status("D_8233000014")
     print(status)
 

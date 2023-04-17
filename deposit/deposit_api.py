@@ -258,7 +258,7 @@ class DepositApi:
         self.rest_adapter.delete(f"depositions/{dep_id}/files/{file_id}")
         return True
 
-    def get_status(self, dep_id: str):
+    def get_status(self, dep_id: str) -> DepositStatus:
         """
         Return the deposition status
         :param dep_id: Deposition ID
@@ -268,10 +268,35 @@ class DepositApi:
         status = DepositStatus(**response.data)
         return status
 
+    def process(self, dep_id: str, voxel: List = None, copy_from_id: int = None, copy_contact: bool = False,
+                copy_authors: bool = False, copy_citation: bool = False, copy_grant: bool = False,
+                copy_em_exp_data: bool = False):
+        copy_elements = []
+        data = {}
+
+        if copy_from_id:
+            copy_elements.append("contact") if copy_contact else None
+            copy_elements.append("authors") if copy_authors else None
+            copy_elements.append("citation") if copy_citation else None
+            copy_elements.append("grant") if copy_grant else None
+            copy_elements.append("em_exp") if copy_em_exp_data else None
+            data["related"] = {
+                'id': copy_from_id,
+                'items': copy_elements
+            }
+
+        if voxel:
+            data['parameters']['voxel'] = voxel
+
+        response = self.rest_adapter.post(f"depositions/{dep_id}/process", data=data)
+        status = DepositStatus(**response.data)
+
+        return status
+
+
+
 
     # TODO: Add get user endpoint
-    # TODO: Add process files endpoint
-    # TODO: Think and add composite endpoints
     # TODO: Add more log
     # TODO: Add unit tests
 
