@@ -1,4 +1,4 @@
-from unittest import TestCase
+import unittest
 import requests
 import mock
 from deposit.rest_adapter import RestAdapter
@@ -6,7 +6,7 @@ from deposit.models import Response
 from deposit.exceptions import DepositApiException
 
 
-class TestRestAdapter(TestCase):
+class TestRestAdapter(unittest.TestCase):
     def setUp(self) -> None:
         self.rest_adapter = RestAdapter("http://localhost")
         self.response = requests.Response()
@@ -43,20 +43,20 @@ class TestRestAdapter(TestCase):
     def test_get(self):
         with mock.patch.object(RestAdapter, "_do", return_value=self.deposit_response) as mock_do:
             result = self.rest_adapter.get('endpoint', {'param': 'value'})
-        mock_do.assert_called_once_with(http_method='GET', endpoint='endpoint', params={'param': 'value'})
+        mock_do.assert_called_once_with(http_method='GET', endpoint='endpoint', params={'param': 'value'}, content_type='application/json')
         self.assertIsInstance(result, Response)
         self.assertEqual(result.status_code, 200)
 
     def test_post(self):
         with mock.patch.object(RestAdapter, "_do", return_value=self.deposit_response) as mock_do:
             result = self.rest_adapter.post('endpoint', {'param': 'value'}, data={})
-        mock_do.assert_called_once_with(http_method='POST', endpoint='endpoint', params={'param': 'value'}, data={})
+        mock_do.assert_called_once_with(http_method='POST', endpoint='endpoint', params={'param': 'value'}, data={}, files=None,  content_type='application/json')
         self.assertIsInstance(result, Response)
         self.assertEqual(result.status_code, 200)
 
     def test_delete(self):
         with mock.patch.object(RestAdapter, "_do", return_value=self.deposit_response) as mock_do:
             result = self.rest_adapter.delete('endpoint', {'param': 'value'}, data={})
-        mock_do.assert_called_once_with(http_method='DELETE', endpoint='endpoint', params={'param': 'value'}, data={})
+        mock_do.assert_called_once_with(http_method='DELETE', endpoint='endpoint', params={'param': 'value'}, data={}, content_type='application/json')
         self.assertIsInstance(result, Response)
         self.assertEqual(result.status_code, 200)

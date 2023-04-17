@@ -271,6 +271,18 @@ class DepositApi:
     def process(self, dep_id: str, voxel: List = None, copy_from_id: int = None, copy_contact: bool = False,
                 copy_authors: bool = False, copy_citation: bool = False, copy_grant: bool = False,
                 copy_em_exp_data: bool = False):
+        """
+        Trigger file processing
+        :param dep_id: Deposition ID
+        :param voxel: EM Voxel list
+        :param copy_from_id: Copy metadata from another deposition?
+        :param copy_contact: Copy contract metadata?
+        :param copy_authors: Copy authors?
+        :param copy_citation: Copy citation?
+        :param copy_grant: Copy grant?
+        :param copy_em_exp_data: Copy EM experimental data?
+        :return: Status
+        """
         copy_elements = []
         data = {}
 
@@ -297,7 +309,6 @@ class DepositApi:
 
 
     # TODO: Add get user endpoint
-    # TODO: Add more log
     # TODO: Add unit tests
 
 
