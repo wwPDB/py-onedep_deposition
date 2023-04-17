@@ -258,6 +258,16 @@ class DepositApi:
         self.rest_adapter.delete(f"depositions/{dep_id}/files/{file_id}")
         return True
 
+    def get_status(self, dep_id: str):
+        """
+        Return the deposition status
+        :param dep_id: Deposition ID
+        :return: Status
+        """
+        response = self.rest_adapter.get(f"depositions/{dep_id}/status")
+        status = DepositStatus(**response.data)
+        return status
+
 
     # TODO: Add get user endpoint
     # TODO: Add process files endpoint

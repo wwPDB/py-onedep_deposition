@@ -3,7 +3,7 @@ from deposit.models import *
 from deposit.deposit_api import DepositApi
 from deposit.enum import Country, EMSubType
 
-API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMDA5LTAwMDUtNzk3OS03NDY2IiwiZXhwIjoxNjgxNDg0NDczLCJpYXQiOjE2ODAxODg0NzN9.Sq4nV16MjvXspibxLRoX4CzVlvy6fpbcKCg-0tmXtxI"
+API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMDA5LTAwMDUtNzk3OS03NDY2IiwiZXhwIjoxNjgzMDMxODgzLCJpYXQiOjE2ODE3MzU4ODN9.j85nBRmBUBRvUMntnD6KEn7eNdifHIP7MBmnMkGdauY"
 BASE_URL = "http://local.wwpdb.org:12000/deposition"
 VERIFY_SSL = False
 
@@ -27,10 +27,14 @@ def debug_rest_adapter():
     #     print(deposition)
 
     # Files
-    file = api.upload_file("D_8233000014", "/Users/neli/Downloads/8f2i.cif", "co-pdb", overwrite=True)
+    # file = api.upload_file("D_8233000014", "/Users/neli/Downloads/8f2i.cif", "co-pdb", overwrite=True)
     # api.remove_file("D_8233000014", 25)
-    files = api.get_files("D_8233000014")
-    print(len(files))
+    # files = api.get_files("D_8233000014")
+    # print(len(files))
+
+    # Status
+    status = api.get_status("D_8233000014")
+    print(status)
 
 if __name__ == '__main__':
     debug_rest_adapter()

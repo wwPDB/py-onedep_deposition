@@ -209,3 +209,14 @@ class DepositedFilesSet:
             self.current_index += 1
             return item
         raise StopIteration
+
+class DepositStatus:
+    def __init__(self, status: str, action: str, step: str, details: str, date: str):
+        self.status = str(status)
+        self.action = str(action)
+        self.step = str(step)
+        self.details = str(details)
+        self.date = datetime.fromisoformat(date)
+
+    def __str__(self):
+        return f"STATUS: {self.status}\nSTEP: {self.step}\nDATE: {self.date}\nACTION: {self.action}\nDETAILS: {self.details}"
