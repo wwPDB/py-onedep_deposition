@@ -54,7 +54,7 @@ class RestAdapter:
                                             params=params, data=data, files=files)
         except requests.exceptions.RequestException as e:
             self._logger.error(msg=(str(e)))
-            raise DepositApiException("Failed to access the API")
+            raise DepositApiException("Failed to access the API", 403)
         if response.status_code == 204:
             # Django is redirecting 204 to OneDep home page
             return Response(204)
@@ -62,14 +62,14 @@ class RestAdapter:
             data_out = response.json()
         except (ValueError, JSONDecodeError) as e:
             self._logger.error(msg=log_line_post.format(False, None, e))
-            raise DepositApiException("Bad JSON in response")
+            raise DepositApiException("Bad JSON in response", 502)
         is_success = 299 >= response.status_code >= 200
         log_line = log_line_post.format(is_success, response.status_code, response.reason)
         if is_success:
             self._logger.debug(msg=log_line)
             return Response(response.status_code, response.reason, data_out)
         self._logger.error(msg=log_line)
-        raise DepositApiException(f"{response.status_code}: {response.reason}")
+        raise DepositApiException(response.reason, response.status_code)
 
     def get(self, endpoint: str, params: Dict = None, content_type: str = "application/json") -> Response:
         """
