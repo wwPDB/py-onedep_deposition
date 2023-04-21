@@ -12,8 +12,8 @@ def debug_rest_adapter():
     # depositions = api.get_all_depositions()
     # print(depositions)
 
-    users = api.add_user("D_8233000014", orcid="0000-0001-6466-8083")
-    print(users)
+    # users = api.add_user("D_8233000014", orcid="0000-0001-6466-8083")
+    # print(users)
 
     # deleted_user = api.remove_user("D_8233000014", orcid="0000-0001-6466-8083")
 
@@ -28,12 +28,13 @@ def debug_rest_adapter():
     #     print(deposition)
 
     # Files
-    # file = api.upload_file("D_8233000014", "/Users/neli/Downloads/8f2i.cif", "co-pdb", overwrite=True)
+    # file = api.upload_file("D_8233000014", "/Users/neli/Downloads/8f2i.cif", "co-pdb", overwrite=False)
     # api.remove_file("D_8233000014", 25)
     # files = api.get_files("D_8233000014")
-    # print(len(files))
+    # print(files)
 
     # Status
+    # response = api.get_status("D_8233000014")
     # response = api.process("D_8233000014")
     # print(response)
 

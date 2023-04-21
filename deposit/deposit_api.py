@@ -221,6 +221,9 @@ class DepositApi:
         files = {}
         file_type_str = file_type
 
+        if not os.path.exists(file_path):
+            raise DepositApiException("Invalid input file", 404)
+
         if type(file_type) == FileType:
             file_type_str = file_type.value
 
@@ -244,6 +247,7 @@ class DepositApi:
             response.data["file_type"] = response.data.pop("type")
 
             return DepositedFile(**response.data)
+
 
     def get_files(self, dep_id: str) -> DepositedFilesSet:
         """
@@ -311,11 +315,7 @@ class DepositApi:
 
         return status
 
-
-
-
     # TODO: Add get user endpoint
-    # TODO: Add unit tests
 
 
 

@@ -1,7 +1,9 @@
 import unittest
+import tempfile
+import os
 from deposit.deposit_api import DepositApi
-from deposit.models import Experiment, Deposit, Depositor
-from deposit.enum import Country, EMSubType
+from deposit.models import Experiment, Deposit, Depositor, DepositedFile, DepositedFilesSet, DepositStatus
+from deposit.enum import Country, EMSubType, FileType
 from deposit.exceptions import DepositApiException
 from unittest.mock import Mock
 
@@ -65,6 +67,7 @@ class DepositApiTests(unittest.TestCase):
         self.deposit_api.rest_adapter.post = Mock(side_effect=DepositApiException("Failed to create deposition", 404))
         with self.assertRaises(DepositApiException) as context:
             self.deposit_api.create_deposition(**self.create_deposition_params)
+        self.assertEqual(context.exception.status_code, 404)
         self.assertEqual(str(context.exception), "Failed to create deposition", "Exception message is not correct")
 
     def test_create_each_method_deposition_success(self):
@@ -133,6 +136,59 @@ class DepositApiTests(unittest.TestCase):
             self.assertIsInstance(user, Depositor, "User was not added successfully")
             self.assertEqual(user.id, i+1, "Deposit ID is not correct")
             self.assertEqual(user.orcid, self.orcids[i], "Deposit ID is not correct")
+
+    def test_upload_file_success(self):
+        _, file_path = tempfile.mkstemp()
+        with open(file_path, "w") as fp:
+            fp.write("test file content")
+
+        expected_response = {"id": 1, "name": "test.mmcif", "type": "co-pdb", "created": "Thursday, April 21, 2023 14:30:00"}
+        self.deposit_api.rest_adapter.post = Mock(return_value=Mock(status_code=200, data=expected_response))
+
+        result = self.deposit_api.upload_file(dep_id=self.dep_id, file_path=file_path, file_type=FileType.PDB_COORD)
+        self.assertIsInstance(result, DepositedFile, "File upload failed")
+        self.assertEqual(result.id, 1, "File ID is not correct")
+        self.assertEqual(result.name, "test.mmcif")
+        self.assertEqual(result.type, FileType.PDB_COORD)
+
+        os.remove(file_path)
+
+    def test_upload_file_failed(self):
+        self.deposit_api.rest_adapter.post = Mock(side_effect=DepositApiException("Invalid file", 404))
+        with self.assertRaises(DepositApiException) as context:
+            result = self.deposit_api.upload_file(dep_id=self.dep_id, file_path="/not/exists/file.mmcif", file_type=FileType.PDB_COORD)
+        self.assertEqual(context.exception.status_code, 404)
+        self.assertEqual(str(context.exception), "Invalid input file", "Invalid input file")
+
+    def test_get_files(self):
+        data = {
+            'errors': [],
+            'warnings': [],
+            'files': [
+                {'name': 'sdasdsa.mcif', 'type': 'co-pdb', 'id': 40, 'created': 'Friday, April 21, 2023 12:03:58'},
+                {'name': '8f2i.cifuwG7AvQT', 'type': 'co-pdb', 'id': 41, 'created': 'Friday, April 21, 2023 12:06:37'}
+            ]
+        }
+        self.deposit_api.rest_adapter.get = Mock(return_value=Mock(status_code=200, data=data))
+        files = self.deposit_api.get_files(self.dep_id)
+        self.assertIsInstance(files, DepositedFilesSet)
+        self.assertEqual(len(files), 2)
+        self.assertEqual(files[0].id, 40)
+        self.assertEqual(files[1].id, 41)
+
+    def test_get_status(self):
+        self.deposit_api.rest_adapter.get = Mock(return_value=Mock(status_code=200, data={'step': 'upload', 'action': 'submit', 'details': 'Upload type processed', 'date': '2023-04-17T14:57:37.774921', 'status': 'running'}))
+        status = self.deposit_api.get_status(self.dep_id)
+        self.assertIsInstance(status, DepositStatus)
+        self.assertEqual(status.status, "running")
+
+    def test_process(self):
+        self.deposit_api.rest_adapter.post = Mock(return_value=Mock(status_code=200, data={'step': 'upload', 'action': 'submit', 'details': 'Upload type processed', 'date': '2023-04-17T14:57:37.774921', 'status': 'running'}))
+        status = self.deposit_api.process(self.dep_id)
+        self.assertIsInstance(status, DepositStatus)
+        self.assertEqual(status.status, "running")
+
+
 
 
 
