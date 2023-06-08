@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools"] # "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "onedep_deposition"
+authors = [
+    {name = "Neli Jose da Fonseca Junior"}
+]
+description = "Package for wrapping the OneDep deposition API services"
+readme = "README.rst"
+requires-python = ">=3.6"
+# keywords = ["one", "two"]
+license = {text = "apache-2.0"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "License :: OSI Approved :: Apache Software License",
+]
+dependencies = [
+    "requests",
+]
+dynamic = ["version"]
+
+[tool.setuptools.packages.find]
+#where = ["onedep_deposition"]
+include = ["onedep_deposition"]
+exclude = ["onedep_deposition.tests*"]
+
+[tool.setuptools.dynamic]
+version = { attr = "onedep_deposition.__version__"} 
