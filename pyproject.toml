@@ -30,4 +30,8 @@ include = ["onedep_deposition"]
 exclude = ["onedep_deposition.tests*"]
 
 [tool.setuptools.dynamic]
-version = { attr = "onedep_deposition.__version__"} 
+version = { attr = "onedep_deposition.__version__"}
+
+[tool.pylint."messages control"]
+disable = [ "fixme" ]
+

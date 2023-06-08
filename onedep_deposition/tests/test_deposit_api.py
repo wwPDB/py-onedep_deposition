@@ -7,6 +7,7 @@ from onedep_deposition.enum import Country, EMSubType, FileType
 from onedep_deposition.exceptions import DepositApiException
 from unittest.mock import Mock
 
+
 class DepositApiTests(unittest.TestCase):
 
     def setUp(self):
@@ -81,7 +82,7 @@ class DepositApiTests(unittest.TestCase):
 
     def test_create_each_method_deposition_failure(self):
         # Test a failed EM deposition creation
-        for method, call in self.create_deposition_methods.items():
+        for _method, call in self.create_deposition_methods.items():
             self.deposit_api.create_deposition = Mock(side_effect=DepositApiException("Failed to create deposition", 404))
             with self.assertRaises(DepositApiException) as context:
                 call(**self.create_deposition_params)
@@ -134,7 +135,7 @@ class DepositApiTests(unittest.TestCase):
         self.assertEqual(len(users), 2, "Number of users is incorrect")
         for i, user in enumerate(users):
             self.assertIsInstance(user, Depositor, "User was not added successfully")
-            self.assertEqual(user.id, i+1, "Deposit ID is not correct")
+            self.assertEqual(user.id, i + 1, "Deposit ID is not correct")
             self.assertEqual(user.orcid, self.orcids[i], "Deposit ID is not correct")
 
     def test_upload_file_success(self):
@@ -156,7 +157,7 @@ class DepositApiTests(unittest.TestCase):
     def test_upload_file_failed(self):
         self.deposit_api.rest_adapter.post = Mock(side_effect=DepositApiException("Invalid file", 404))
         with self.assertRaises(DepositApiException) as context:
-            result = self.deposit_api.upload_file(dep_id=self.dep_id, file_path="/not/exists/file.mmcif", file_type=FileType.PDB_COORD)
+            _result = self.deposit_api.upload_file(dep_id=self.dep_id, file_path="/not/exists/file.mmcif", file_type=FileType.PDB_COORD)  # noqa: F841
         self.assertEqual(context.exception.status_code, 404)
         self.assertEqual(str(context.exception), "Invalid input file", "Invalid input file")
 
@@ -177,27 +178,25 @@ class DepositApiTests(unittest.TestCase):
         self.assertEqual(files[1].id, 41)
 
     def test_get_status(self):
-        self.deposit_api.rest_adapter.get = Mock(return_value=Mock(status_code=200, data={'step': 'upload', 'action': 'submit', 'details': 'Upload type processed', 'date': '2023-04-17T14:57:37.774921', 'status': 'running'}))
+        self.deposit_api.rest_adapter.get = Mock(return_value=Mock(status_code=200,
+                                                                   data={'step': 'upload', 'action': 'submit', 'details': 'Upload type processed',
+                                                                         'date': '2023-04-17T14:57:37.774921', 'status': 'running'}))
         status = self.deposit_api.get_status(self.dep_id)
         self.assertIsInstance(status, DepositStatus)
         self.assertEqual(status.status, "running")
 
     def test_process(self):
-        self.deposit_api.rest_adapter.post = Mock(return_value=Mock(status_code=200, data={'step': 'upload', 'action': 'submit', 'details': 'Upload type processed', 'date': '2023-04-17T14:57:37.774921', 'status': 'running'}))
+        self.deposit_api.rest_adapter.post = Mock(return_value=Mock(status_code=200,
+                                                                    data={'step': 'upload', 'action': 'submit', 'details': 'Upload type processed',
+                                                                          'date': '2023-04-17T14:57:37.774921', 'status': 'running'}))
         status = self.deposit_api.process(self.dep_id)
         self.assertIsInstance(status, DepositStatus)
         self.assertEqual(status.status, "running")
 
-
-
-
-
-
-
-
     def tearDown(self):
         # Clean up any resources used in the tests
         pass
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -18,11 +18,13 @@ class ExperimentType(enum.Enum):
     NMR = 'nmr'
     SSNMR = 'ssnmr'
 
+
 class EMSubType(enum.Enum):
     HELICAL = "helical"
     SPA = "single"
     SUBTOMOGRAM = "subtomogram"
     TOMOGRAPHY = "tomography"
+
 
 class Country(enum.Enum):
     AFGHANISTAN = "Afghanistan"
@@ -273,6 +275,7 @@ class Country(enum.Enum):
     YEMEN = "Yemen"
     ZAMBIA = "Zambia"
     ZIMBABWE = "Zimbabwe"
+
 
 class FileType(enum.Enum):
     LAYER = "layer-lines"

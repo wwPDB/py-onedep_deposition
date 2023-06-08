@@ -50,7 +50,7 @@ class TestRestAdapter(unittest.TestCase):
     def test_post(self):
         with mock.patch.object(RestAdapter, "_do", return_value=self.deposit_response) as mock_do:
             result = self.rest_adapter.post('endpoint', {'param': 'value'}, data={})
-        mock_do.assert_called_once_with(http_method='POST', endpoint='endpoint', params={'param': 'value'}, data={}, files=None,  content_type='application/json')
+        mock_do.assert_called_once_with(http_method='POST', endpoint='endpoint', params={'param': 'value'}, data={}, files=None, content_type='application/json')
         self.assertIsInstance(result, Response)
         self.assertEqual(result.status_code, 200)
 

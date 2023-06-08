@@ -123,7 +123,7 @@ class Deposit:
                 self.errors.append(DepositError(**error))
 
     def __str__(self):
-        return f"ID: {self.dep_id}\nE-mail: {self.email}\nEntry ID: {self.entry_id}\nTitle: {self.title}\nCreated: {self.created}\nLast login: {self.last_login}\nSite: {self.site}\nStatus: {self.status}\nSite URL: {self.site_url}\nExperiments: {self.experiments}\nErrors: {self.errors}"
+        return f"ID: {self.dep_id}\nE-mail: {self.email}\nEntry ID: {self.entry_id}\nTitle: {self.title}\nCreated: {self.created}\nLast login: {self.last_login}\nSite: {self.site}\nStatus: {self.status}\nSite URL: {self.site_url}\nExperiments: {self.experiments}\nErrors: {self.errors}"  # noqa: E501
 
     def json(self):
         json_object = self.__dict__.copy()
@@ -186,7 +186,7 @@ class DepositedFile:
         message = f"ID: {self.id}\nCREATED ON: {self.created}\nNAME: {self.name}\nTYPE: {self.type}\nERRORS:\n"
         for error in self.errors:
             message += f"  -{error}\n"
-        message += f"\nWARNINGS:\n"
+        message += "\nWARNINGS:\n"
         for warning in self.warnings:
             message += f"  -{warning}\n"
 
@@ -210,15 +210,16 @@ class DepositedFilesSet:
         return len(self.files)
 
     def __iter__(self):
-        self.current_index = 0
+        self.__current_index = 0
         return self
 
     def __next__(self):
-        if self.current_index < len(self.files):
-            item = self.files[self.current_index]
-            self.current_index += 1
+        if self.__current_index < len(self.files):
+            item = self.files[self.__current_index]
+            self.__current_index += 1
             return item
         raise StopIteration
+
 
 class DepositStatus:
     def __init__(self, status: str, action: str, step: str, details: str, date: str):

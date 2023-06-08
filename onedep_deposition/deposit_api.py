@@ -1,8 +1,9 @@
 import logging
 from onedep_deposition.rest_adapter import RestAdapter
-from onedep_deposition.models import *
+from onedep_deposition.models import DepositStatus, Experiment, Deposit, Depositor, DepositedFile, DepositedFilesSet
 from onedep_deposition.enum import Country, EMSubType, FileType
 from onedep_deposition.exceptions import DepositApiException
+from typing import List, Union
 import mimetypes
 import os
 
@@ -175,7 +176,7 @@ class DepositApi:
         :return: Depositor
         """
         # TODO: This endpoint is missing
-        response = self.rest_adapter.get(f"depositions/{dep_id}/users")
+        response = self.rest_adapter.get(f"depositions/{dep_id}/users")  # noqa: F841
         # FIXME
         return None
 
@@ -248,7 +249,6 @@ class DepositApi:
 
             return DepositedFile(**response.data)
 
-
     def get_files(self, dep_id: str) -> DepositedFilesSet:
         """
         Get all files in deposition
@@ -316,6 +316,3 @@ class DepositApi:
         return status
 
     # TODO: Add get user endpoint
-
-
-
