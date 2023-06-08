@@ -1,8 +1,8 @@
 import logging
-from deposit.rest_adapter import RestAdapter
-from deposit.models import *
-from deposit.enum import Country, EMSubType, FileType
-from deposit.exceptions import DepositApiException
+from onedep_deposition.rest_adapter import RestAdapter
+from onedep_deposition.models import *
+from onedep_deposition.enum import Country, EMSubType, FileType
+from onedep_deposition.exceptions import DepositApiException
 import mimetypes
 import os
 

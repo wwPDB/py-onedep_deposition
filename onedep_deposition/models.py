@@ -1,5 +1,5 @@
 from typing import List, Dict, Union
-from deposit.enum import Status, ExperimentType, EMSubType, FileType
+from onedep_deposition.enum import Status, ExperimentType, EMSubType, FileType
 from datetime import datetime
 
 

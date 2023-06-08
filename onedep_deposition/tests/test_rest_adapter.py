@@ -1,9 +1,9 @@
 import unittest
 import requests
 import mock
-from deposit.rest_adapter import RestAdapter
-from deposit.models import Response
-from deposit.exceptions import DepositApiException
+from onedep_deposition.rest_adapter import RestAdapter
+from onedep_deposition.models import Response
+from onedep_deposition.exceptions import DepositApiException
 
 
 class TestRestAdapter(unittest.TestCase):

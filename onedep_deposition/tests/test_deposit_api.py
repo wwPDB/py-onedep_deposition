@@ -1,10 +1,10 @@
 import unittest
 import tempfile
 import os
-from deposit.deposit_api import DepositApi
-from deposit.models import Experiment, Deposit, Depositor, DepositedFile, DepositedFilesSet, DepositStatus
-from deposit.enum import Country, EMSubType, FileType
-from deposit.exceptions import DepositApiException
+from onedep_deposition.deposit_api import DepositApi
+from onedep_deposition.models import Experiment, Deposit, Depositor, DepositedFile, DepositedFilesSet, DepositStatus
+from onedep_deposition.enum import Country, EMSubType, FileType
+from onedep_deposition.exceptions import DepositApiException
 from unittest.mock import Mock
 
 class DepositApiTests(unittest.TestCase):

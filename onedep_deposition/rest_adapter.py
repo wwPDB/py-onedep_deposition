@@ -3,8 +3,8 @@ import requests.packages
 import logging
 from typing import Dict, Union, List
 from json import JSONDecodeError
-from deposit.exceptions import DepositApiException
-from deposit.models import Response
+from onedep_deposition.exceptions import DepositApiException
+from onedep_deposition.models import Response
 
 
 class RestAdapter:
