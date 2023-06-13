@@ -143,7 +143,7 @@ class Country(enum.Enum):
     KIRIBATI = "Kiribati"
     KUWAIT = "Kuwait"
     KYRGYZSTAN = "Kyrgyzstan"
-    LAOS = "Lao People'S Democratic Republic",
+    LAOS = "Lao People'S Democratic Republic"
     LATVIA = "Latvia"
     LEBANON = "Lebanon"
     LESOTHO = "Lesotho"
@@ -187,7 +187,7 @@ class Country(enum.Enum):
     NIGERIA = "Nigeria"
     NIUE = "Niue"
     NORFOLK = "Norfolk Island"
-    NORTH_KOREA = "Korea, Democratic People'S Republic Of",
+    NORTH_KOREA = "Korea, Democratic People'S Republic Of"
     NORTHERN_MARIANA = "Northern Mariana Islands"
     NORWAY = "Norway"
     OMAN = "Oman"

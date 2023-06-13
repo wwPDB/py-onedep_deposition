@@ -34,7 +34,7 @@ class DepositApi:
         :return: Site url
         """
         lower_country = country.value.lower()
-        if lower_country == countries_to_site:
+        if lower_country in countries_to_site:
             return countries_to_site[country.value.lower()]
         else:
             raise DepositApiException("Invalid country", 400)
