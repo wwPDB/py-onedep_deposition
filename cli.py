@@ -42,8 +42,6 @@ def deposition_group():
 def create(dep_type: str, email: str, users: List[str], country_string: str, subtype: str, related_emdb: str,
            related_bmrb: str, password: str, hostname: str, ssl_verify: bool):
     """`create` command handler"""
-    if dep_type not in ["em", "xray", "fiber", "neutron", "ec", "nmr", "ssnmr"]:
-        raise click.BadParameter("Invalid experiment type, options are: em, xray, fiber, neutron, ec, nmr, ssnmr")
     if subtype:
         if subtype not in ["helical", "single", "subtomogram", "tomography"]:
             raise click.BadParameter("Invalid experiment subtype, options are: helical, single, subtomogram, tomography")
@@ -72,7 +70,21 @@ def create(dep_type: str, email: str, users: List[str], country_string: str, sub
 
     if dep_type == "em":
         deposition = api.create_em_deposition(email, users, country, subtype, related_emdb, password)
-        print(deposition)
+    elif dep_type == "xray":
+        deposition = api.create_xray_deposition(email, users, country, password)
+    elif dep_type == "fiber":
+        deposition = api.create_fiber_deposition(email, users, country, password)
+    elif dep_type == "neutron":
+        deposition = api.create_neutron_deposition(email, users, country, password)
+    elif dep_type == "ec":
+        deposition = api.create_ec_deposition(email, users, country, related_emdb, password)
+    elif dep_type == "nmr":
+        deposition = api.create_nmr_deposition(email, users, country, related_bmrb, password)
+    elif dep_type == "ssnmr":
+        deposition = api.create_ssnmr_deposition(email, users, country, related_bmrb, password)
+    else:
+        raise click.BadParameter("Invalid experiment type, options are: em, xray, fiber, neutron, ec, nmr, ssnmr")
+    print(deposition)
 
 
 
