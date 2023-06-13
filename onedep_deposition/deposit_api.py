@@ -40,6 +40,7 @@ class DepositApi:
         }
         if password:
             data["password"] = password
+
         response = self.rest_adapter.post("depositions/new", data=data)
         deposit = Deposit(**response.data)
         return deposit
@@ -244,6 +245,7 @@ class DepositApi:
 
         with open(file_path, "rb") as fp:
             files["file"] = (file_name, fp, mime_type)
+
             response = self.rest_adapter.post(f"depositions/{dep_id}/files/", data=data, files=files, content_type="")
             response.data["file_type"] = response.data.pop("type")
 

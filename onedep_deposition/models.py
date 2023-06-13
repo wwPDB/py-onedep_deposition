@@ -4,6 +4,7 @@ from datetime import datetime
 
 
 class Response:
+    """Class representing an API response"""
     def __init__(self, status_code: int, message: str = '', data: List[Dict] = None):
         """
         Constructor for Response
@@ -11,19 +12,44 @@ class Response:
         :param message: Message
         :param data: Response data
         """
-        self.status_code = int(status_code)
-        self.message = str(message)
-        self.data = data if data else []
+        self._status_code = int(status_code)
+        self._message = str(message)
+        self._data = data if data else []
+
+    @property
+    def status_code(self) -> int:
+        return self._status_code
+
+    @status_code.setter
+    def status_code(self, value: int):
+        self._status_code = int(value)
+
+    @property
+    def message(self) -> str:
+        return self._message
+
+    @message.setter
+    def message(self, value: str):
+        self._message = str(value)
+
+    @property
+    def data(self) -> List[Dict]:
+        return self._data
+
+    @data.setter
+    def data(self, value: List[Dict]):
+        self._data = value if value else []
 
     def __str__(self):
         """
         Override string parser
         :return: String text
         """
-        return f"STATUS: {self.status_code}, MESSAGE: {self.message}\n{self.data}"
+        return f"STATUS: {self._status_code}, MESSAGE: {self._message}\n{self._data}"
 
 
 class Experiment:
+    """Class representing an experiment"""
     def __init__(self, exp_type: Union[ExperimentType, str], subtype: Union[EMSubType, str] = None,
                  related_emdb: str = None, related_bmrb: str = None):
         """
@@ -33,10 +59,10 @@ class Experiment:
         :param related_emdb:
         :param related_bmrb:
         """
-        self.type = None
-        self.subtype = None
-        self.related_emdb = str(related_emdb)
-        self.related_bmrb = str(related_bmrb)
+        self._type = None
+        self._subtype = None
+        self._related_emdb = str(related_emdb)
+        self._related_bmrb = str(related_bmrb)
 
         if type(exp_type) == ExperimentType:
             self.type = exp_type
@@ -47,26 +73,61 @@ class Experiment:
         elif subtype:
             self.subtype = EMSubType(subtype)
 
+    @property
+    def type(self) -> Union[ExperimentType, None]:
+        return self._type
+
+    @type.setter
+    def type(self, value: Union[ExperimentType, None]):
+        self._type = value
+
+    @property
+    def subtype(self) -> Union[EMSubType, None]:
+        return self._subtype
+
+    @subtype.setter
+    def subtype(self, value: Union[EMSubType, None]):
+        self._subtype = value
+
+    @property
+    def related_emdb(self) -> str:
+        return self._related_emdb
+
+    @related_emdb.setter
+    def related_emdb(self, value: str):
+        self._related_emdb = str(value)
+
+    @property
+    def related_bmrb(self) -> str:
+        return self._related_bmrb
+
+    @related_bmrb.setter
+    def related_bmrb(self, value: str):
+        self._related_bmrb = str(value)
+
     def __str__(self):
-        message = f"TYPE: {self.type}"
+        message = f"TYPE: {self._type}"
         if self.subtype:
-            message += f" ({self.subtype})"
+            message += f" ({self._subtype})"
         if self.related_emdb:
-            message += f" [{self.related_emdb}]"
+            message += f" [{self._related_emdb}]"
         elif self.related_bmrb:
-            message += f" [{self.related_bmrb}]"
+            message += f" [{self._related_bmrb}]"
         return message
 
     def json(self):
         json_object = self.__dict__.copy()
+        json_object = {key[1:]: value for key, value in json_object.items()}
+
         if self.type:
-            json_object['type'] = self.type.value
+            json_object['type'] = self._type.value
         if self.subtype:
-            json_object['subtype'] = self.subtype.value
+            json_object['subtype'] = self._subtype.value
         return json_object
 
 
 class DepositError:
+    """Class representing an deposit error"""
     def __init__(self, code: str, message: str, extras: str = None):
         """
         Constructor for DepositError
@@ -74,15 +135,42 @@ class DepositError:
         :param message:
         :param extras:
         """
-        self.code = str(code)
-        self.message = str(message)
-        self.extras = extras
+        self._code = str(code)
+        self._message = str(message)
+        self._extras = extras
+
+    @property
+    def code(self) -> str:
+        return self._code
+
+    @code.setter
+    def code(self, value: str):
+        self._code = str(value)
+
+    @property
+    def message(self) -> str:
+        return self._message
+
+    @message.setter
+    def message(self, value: str):
+        self._message = str(value)
+
+    @property
+    def extras(self) -> str:
+        return self._extras
+
+    @extras.setter
+    def extras(self, value: str):
+        self._extras = value
 
     def json(self):
-        return self.__dict__.copy()
+        json_object =  self.__dict__.copy()
+        json_object = {key[1:]: value for key, value in json_object.items()}
+        return json_object
 
 
 class Deposit:
+    """Class representing an deposit"""
     def __init__(self, email: str, id: str, entry_id: str, title: str, created: str, last_login: str, site: str,
                  status: Status, experiments: List = None, errors: List = None, site_url: str = None):
         """
@@ -99,135 +187,412 @@ class Deposit:
         :param errors:
         :param site_url
         """
-        self.email = str(email)
-        self.dep_id = str(id)
-        self.entry_id = str(entry_id)
-        self.title = str(title)
-        self.created = datetime.fromisoformat(created)
-        self.last_login = datetime.fromisoformat(last_login)
-        self.site = str(site)
-        self.status = getattr(Status, status)
-        self.experiments = []
-        self.errors = []
-        self.site_url = str(site_url)
+        self._email = str(email)
+        self._id = str(id)
+        self._entry_id = str(entry_id)
+        self._title = str(title)
+        self._created = datetime.fromisoformat(created)
+        self._last_login = datetime.fromisoformat(last_login)
+        self._site = str(site)
+        self._status = getattr(Status, status)
+        self._experiments = []
+        self._errors = []
+        self._site_url = str(site_url)
 
         if experiments:
             for exp in experiments:
                 # Replace reserved work type
                 if "type" in exp:
                     exp["exp_type"] = exp.pop("type")
-                self.experiments.append(Experiment(**exp))
-        # FIXME: Error ta vindo so como string
+                self._experiments.append(Experiment(**exp))
+
+        # FIXME: Error is coming as a string
         if errors:
             for error in errors:
-                self.errors.append(DepositError(**error))
+                self._errors.append(DepositError(**error))
+
+    @property
+    def email(self) -> str:
+        return self._email
+
+    @email.setter
+    def email(self, value: str):
+        self._email = str(value)
+
+    @property
+    def dep_id(self) -> str:
+        return self._id
+
+    @dep_id.setter
+    def dep_id(self, value: str):
+        self._id = str(value)
+
+    @property
+    def entry_id(self) -> str:
+        return self._entry_id
+
+    @entry_id.setter
+    def entry_id(self, value: str):
+        self._entry_id = str(value)
+
+    @property
+    def title(self) -> str:
+        return self._title
+
+    @title.setter
+    def title(self, value: str):
+        self._title = str(value)
+
+    @property
+    def created(self) -> datetime:
+        return self._created
+
+    @created.setter
+    def created(self, value: str):
+        self._created = datetime.fromisoformat(value)
+
+    @property
+    def last_login(self) -> datetime:
+        return self._last_login
+
+    @last_login.setter
+    def last_login(self, value: str):
+        self._last_login = datetime.fromisoformat(value)
+
+    @property
+    def site(self) -> str:
+        return self._site
+
+    @site.setter
+    def site(self, value: str):
+        self._site = str(value)
+
+    @property
+    def status(self) -> Status:
+        return self._status
+
+    @status.setter
+    def status(self, value: Status):
+        self._status = value
+
+    @property
+    def experiments(self) -> List[Experiment]:
+        return self._experiments
+
+    @experiments.setter
+    def experiments(self, value: List[Experiment]):
+        self._experiments = value if value else []
+
+    @property
+    def errors(self) -> List[DepositError]:
+        return self._errors
+
+    @errors.setter
+    def errors(self, value: List[DepositError]):
+        self._errors = value if value else []
+
+    @property
+    def site_url(self) -> str:
+        return self._site_url
+
+    @site_url.setter
+    def site_url(self, value: str):
+        self._site_url = str(value)
 
     def __str__(self):
-        return f"ID: {self.dep_id}\nE-mail: {self.email}\nEntry ID: {self.entry_id}\nTitle: {self.title}\nCreated: {self.created}\nLast login: {self.last_login}\nSite: {self.site}\nStatus: {self.status}\nSite URL: {self.site_url}\nExperiments: {self.experiments}\nErrors: {self.errors}"  # noqa: E501
+        return f"ID: {self._id}\nE-mail: {self._email}\nEntry ID: {self._entry_id}\nTitle: {self._title}\nCreated: {self._created}\nLast login: {self._last_login}\nSite: {self._site}\nStatus: {self._status}\nSite URL: {self._site_url}\nExperiments: {self._experiments}\nErrors: {self._errors}"  # noqa: E501
 
     def json(self):
         json_object = self.__dict__.copy()
+        json_object = {key[1:]: value for key, value in json_object.items()}
         json_object['experiments'] = []
         json_object['errors'] = []
-        json_object['status'] = self.status.name
-        for experiment in self.experiments:
+        json_object['status'] = self._status.name
+        for experiment in self._experiments:
             json_object['experiments'].append(experiment.json())
-        for error in self.errors:
+        for error in self._errors:
             json_object['errors'].append(error.json())
 
         return json_object
 
 
 class Depositor:
+    """Class representing a depositor"""
     def __init__(self, orcid: str, id: int, full_name: str, last_login: str = None, date_joined: str = None,
                  depositions: List[Deposit] = None):
-        self.orcid = str(orcid)
-        self.id = int(id)
-        self.full_name = str(full_name),
-        self.last_login = datetime.fromisoformat(last_login) if last_login else None
-        self.date_joined = datetime.fromisoformat(date_joined) if date_joined else None
-        self.depositions = []
+        """Constructor for depositor
+        :param orcid:
+        :param id:
+        :param full_name:
+        :param last_login:
+        :param date_joined:
+        :param depositions:
+        """
+        self._orcid = str(orcid)
+        self._id = int(id)
+        self._full_name = str(full_name)
+        self._last_login = datetime.fromisoformat(last_login) if last_login else None
+        self._date_joined = datetime.fromisoformat(date_joined) if date_joined else None
+        self._depositions = []
 
         if depositions:
             for deposition in depositions:
-                depositions.append(**deposition)
+                self._depositions.append(**deposition)
+
+    @property
+    def orcid(self) -> str:
+        return self._orcid
+
+    @orcid.setter
+    def orcid(self, value: str):
+        self._orcid = str(value)
+
+    @property
+    def id(self) -> int:
+        return self._id
+
+    @id.setter
+    def id(self, value: int):
+        self._id = int(value)
+
+    @property
+    def full_name(self) -> str:
+        return self._full_name
+
+    @full_name.setter
+    def full_name(self, value: str):
+        self._full_name = str(value)
+
+    @property
+    def last_login(self) -> datetime:
+        return self._last_login
+
+    @last_login.setter
+    def last_login(self, value: str):
+        self._last_login = datetime.fromisoformat(value) if value else None
+
+    @property
+    def date_joined(self) -> datetime:
+        return self._date_joined
+
+    @date_joined.setter
+    def date_joined(self, value: str):
+        self._date_joined = datetime.fromisoformat(value) if value else None
+
+    @property
+    def depositions(self) -> List[Deposit]:
+        return self._depositions
+
+    @depositions.setter
+    def depositions(self, value: List[Deposit]):
+        self._depositions = value if value else []
 
     def __str__(self):
-        return f"Name: {self.full_name} [{self.id}]\nORCID: {self.orcid}\nDate joined: {self.date_joined}\nLast login: {self.last_login}\nDepositions: {self.depositions}"
+        return f"Name: {self._full_name} [{self._id}]\nORCID: {self._orcid}\nDate joined: {self._date_joined}\nLast login: {self._last_login}\nDepositions: {self._depositions}"
 
     def json(self):
         json_object = self.__dict__.copy()
+        json_object = {key[1:]: value for key, value in json_object.items()}
         json_object["depositions"] = []
 
-        for deposition in self.depositions:
+        for deposition in self._depositions:
             json_object["depositions"].append(deposition.json())
 
         return json_object
 
 
 class DepositedFile:
+    """Class representing a deposited file"""
     def __init__(self, id: int, created: str, name: str, file_type: Union[str, FileType], errors: List[str] = None,
                  warnings: List[str] = None):
-        self.id = int(id)
-        self.name = str(name)
+        """Constructor for deposited file
+        :param id:
+        :param created:
+        :param name:
+        :param file_type:
+        :param errors:
+        :param warnings:
+        """
+        self._id = int(id)
+        self._name = str(name)
 
         date_format = "%A, %B %d, %Y %H:%M:%S"
-        self.created = datetime.strptime(created, date_format)
+        self._created = datetime.strptime(created, date_format)
 
-        if type(file_type) == str:
-            self.type = FileType(file_type)
+        if isinstance(file_type, str):
+            self._type = FileType(file_type)
         else:
-            self.type = file_type
+            self._type = file_type
 
-        self.errors = [error for error in errors if error != ""] if errors else []
-        self.warnings = [warning for warning in warnings if warning != ""] if warnings else []
+        self._errors = [error for error in errors if error != ""] if errors else []
+        self._warnings = [warning for warning in warnings if warning != ""] if warnings else []
 
     def __str__(self):
-        message = f"ID: {self.id}\nCREATED ON: {self.created}\nNAME: {self.name}\nTYPE: {self.type}\nERRORS:\n"
-        for error in self.errors:
+        message = f"ID: {self._id}\nCREATED ON: {self._created}\nNAME: {self._name}\nTYPE: {self._type}\nERRORS:\n"
+        for error in self._errors:
             message += f"  -{error}\n"
         message += "\nWARNINGS:\n"
-        for warning in self.warnings:
+        for warning in self._warnings:
             message += f"  -{warning}\n"
 
         return message
 
+    @property
+    def id(self) -> int:
+        return self._id
+
+    @id.setter
+    def id(self, value: int):
+        self._id = int(value)
+
+    @property
+    def created(self) -> datetime:
+        return self._created
+
+    @created.setter
+    def created(self, value: str):
+        date_format = "%A, %B %d, %Y %H:%M:%S"
+        self._created = datetime.strptime(value, date_format)
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @name.setter
+    def name(self, value: str):
+        self._name = str(value)
+
+    @property
+    def file_type(self) -> FileType:
+        return self._type
+
+    @file_type.setter
+    def file_type(self, value: Union[str, FileType]):
+        if isinstance(value, str):
+            self._type = FileType(value)
+        else:
+            self._type = value
+
+    @property
+    def errors(self) -> List[str]:
+        return self._errors
+
+    @errors.setter
+    def errors(self, value: List[str]):
+        self._errors = [error for error in value if error != ""] if value else []
+
+    @property
+    def warnings(self) -> List[str]:
+        return self._warnings
+
+    @warnings.setter
+    def warnings(self, value: List[str]):
+        self._warnings = [warning for warning in value if warning != ""] if value else []
+
 
 class DepositedFilesSet:
+    """
+    Class representing a set of deposited files
+    """
     def __init__(self, files: List[Dict], errors: List[str] = None, warnings: List[str] = None):
-        self.files = []
-        self.errors = [error for error in errors if error != ""] if errors else []
-        self.warnings = [warning for warning in warnings if warning != ""] if errors else []
+        """Constructor for deposited files set"""
+        self._files = []
+        self._errors = [error for error in errors if error != ""] if errors else []
+        self._warnings = [warning for warning in warnings if warning != ""] if errors else []
 
         for file in files:
             file["file_type"] = file.pop("type")
-            self.files.append(DepositedFile(**file))
+            self._files.append(DepositedFile(**file))
 
     def __getitem__(self, index):
-        return self.files[index]
+        return self._files[index]
 
     def __len__(self):
-        return len(self.files)
+        return len(self._files)
 
     def __iter__(self):
-        self.__current_index = 0
+        self._current_index = 0
         return self
 
     def __next__(self):
-        if self.__current_index < len(self.files):
-            item = self.files[self.__current_index]
-            self.__current_index += 1
+        if self._current_index < len(self._files):
+            item = self._files[self._current_index]
+            self._current_index += 1
             return item
         raise StopIteration
+
+    @property
+    def files(self) -> List[DepositedFile]:
+        return self._files
+
+    @files.setter
+    def files(self, value: List[DepositedFile]):
+        self._files = value if value else []
+
+    @property
+    def errors(self) -> List[str]:
+        return self._errors
+
+    @errors.setter
+    def errors(self, value: List[str]):
+        self._errors = [error for error in value if error != ""] if value else []
+
+    @property
+    def warnings(self) -> List[str]:
+        return self._warnings
+
+    @warnings.setter
+    def warnings(self, value: List[str]):
+        self._warnings = [warning for warning in value if warning != ""] if value else []
 
 
 class DepositStatus:
     def __init__(self, status: str, action: str, step: str, details: str, date: str):
-        self.status = str(status)
-        self.action = str(action)
-        self.step = str(step)
-        self.details = str(details)
-        self.date = datetime.fromisoformat(date)
+        self._status = str(status)
+        self._action = str(action)
+        self._step = str(step)
+        self._details = str(details)
+        self._date = datetime.fromisoformat(date)
 
     def __str__(self):
-        return f"STATUS: {self.status}\nSTEP: {self.step}\nDATE: {self.date}\nACTION: {self.action}\nDETAILS: {self.details}"
+        return f"STATUS: {self._status}\nSTEP: {self._step}\nDATE: {self._date}\nACTION: {self._action}\nDETAILS: {self._details}"
+
+    @property
+    def status(self) -> str:
+        return self._status
+
+    @status.setter
+    def status(self, value: str):
+        self._status = str(value)
+
+    @property
+    def action(self) -> str:
+        return self._action
+
+    @action.setter
+    def action(self, value: str):
+        self._action = str(value)
+
+    @property
+    def step(self) -> str:
+        return self._step
+
+    @step.setter
+    def step(self, value: str):
+        self._step = str(value)
+
+    @property
+    def details(self) -> str:
+        return self._details
+
+    @details.setter
+    def details(self, value: str):
+        self._details = str(value)
+
+    @property
+    def date(self) -> datetime:
+        return self._date
+
+    @date.setter
+    def date(self, value: str):
+        self._date = datetime.fromisoformat(value)
