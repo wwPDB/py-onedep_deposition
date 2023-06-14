@@ -213,11 +213,11 @@ def get(api: DepositApi, ctx: Dict, dep_id: str):
 
 
 @files_group.command(name="remove", help="Remove a file from the deposition")
-@click.argument("file_id")
 @click.argument("dep_id")
+@click.argument("file_id")
 @click.pass_context
 @create_api
-def remove(api: DepositApi, ctx: Dict, dep_id: str, file_id: str):
+def remove(api: DepositApi, ctx: Dict, dep_id: str, file_id: int):
     """`remove` command handler"""
     file_removed = api.remove_file(dep_id, file_id)
     if file_removed:

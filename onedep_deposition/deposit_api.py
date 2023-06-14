@@ -263,7 +263,7 @@ class DepositApi:
         if overwrite:
             deposited_files = self.get_files(dep_id)
             for file in deposited_files:
-                if file.type.value == file_type_str:
+                if file.file_type.value == file_type_str:
                     self.remove_file(dep_id, file.id)
 
         with open(file_path, "rb") as fp:
