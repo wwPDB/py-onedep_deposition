@@ -3,7 +3,9 @@ import re
 import os
 from typing import List, Union, Dict
 from onedep_deposition.deposit_api import DepositApi
-from onedep_deposition.enum import Country
+from onedep_deposition.enum import Country, FileType
+
+VERSION = "1.0.0"
 
 def get_api_key():
     """Get API key from the file system or environment variable"""
@@ -24,6 +26,12 @@ def get_country_enum(country_string: str):
             return country
     raise click.BadParameter("Invalid country, options are: " + ", ".join([country.value for country in Country]))
 
+def get_file_type_enum(file_type_string: str):
+    """Get FileType enum from string"""
+    for file_type in FileType:
+        if file_type.value == file_type_string:
+            return file_type
+    raise click.BadParameter("Invalid file type, options are: " + ", ".join([file_type.value for file_type in FileType]))
 
 def create_api(func):
     """Decorator to create the API object"""
@@ -95,7 +103,7 @@ def create(api: DepositApi, ctx: Dict, dep_type: str, email: str, users: List[st
         deposition = api.create_ssnmr_deposition(email, users, country, related_bmrb, password)
     else:
         raise click.BadParameter("Invalid experiment type, options are: em, xray, fiber, neutron, ec, nmr, ssnmr")
-    print(deposition)
+    click.echo(deposition)
 
 @deposition_group.command(name="get", help="Get deposition info")
 @click.argument("dep_id")
@@ -104,7 +112,7 @@ def create(api: DepositApi, ctx: Dict, dep_type: str, email: str, users: List[st
 def get(api: DepositApi, ctx: Dict, dep_id: str):
     """`get` deposition command handler"""
     deposition = api.get_deposition(dep_id)
-    print(deposition)
+    click.echo(deposition)
 
 
 @deposition_group.command(name="status", help="Status of processing")
@@ -132,13 +140,13 @@ def get(api: DepositApi, ctx: Dict, dep_id: str):
     """`get` users command handler"""
     users = api.get_users(dep_id)
     for user in users:
-        print(user)
-        print("---------------------------------")
+        click.echo(user)
+        click.echo("---------------------------------")
 
 
 @users_group.command(name="add", help="Add users to the deposition")
 @click.argument("dep_id")
-@click.option("-o", "--orcid", "orcid", multiple=True, help="User orcid to be removed from the deposition")
+@click.option("-O", "--orcid", "orcid", multiple=True, help="User orcid to be removed from the deposition")
 @click.pass_context
 @create_api
 def add(api: DepositApi, ctx: Dict, dep_id: str, orcid: Union[List, str]):
@@ -149,51 +157,72 @@ def add(api: DepositApi, ctx: Dict, dep_id: str, orcid: Union[List, str]):
         orcid = list(orcid)
     users = api.add_user(dep_id, orcid=orcid)
     for user in users:
-        print(user)
-        print("---------------------------------")
+        click.echo(user)
+        click.echo("---------------------------------")
 
 
 @users_group.command(name="remove", help="Remove an user from a deposition")
 @click.argument("dep_id")
-@click.option("-o", "--orcid", "orcid", multiple=False, help="User orcid to be removed from the deposition")
+@click.option("-O", "--orcid", "orcid", multiple=False, help="User orcid to be removed from the deposition")
 @click.pass_context
 @create_api
 def remove(api: DepositApi, ctx: Dict, dep_id: str, orcid: str):
     """`remove` command handler"""
     used_deleted = api.remove_user(dep_id, orcid)
     if used_deleted:
-        print(f"User {orcid} was removed from the deposition {dep_id}.")
+        click.echo(f"User {orcid} was removed from the deposition {dep_id}.")
 
 
 @click.group(name="files", help="Manage deposition files")
 def files_group():
     """`files` command group"""
-    # FIXME: implement
-
 
 @files_group.command(name="upload", help="Upload a file to the deposition")
-@click.argument("file_path")
-@click.argument("file_type")
 @click.argument("dep_id")
-@click.option("-o", "--overwrite", "overwrite", help="Overwrite destination file if file with same name is present")
-def upload(file_path, file_type, dep_id, overwrite):
+@click.option("-f", "--file_path", "file_path", help="File path to be uploaded")
+@click.option("-t", "--file_type", "file_type", help="File type to be uploaded")
+@click.option("--overwrite", "overwrite", is_flag=True, help="Overwrite destination file if file with same name is present")
+@click.pass_context
+@create_api
+def upload(api: DepositApi, ctx: Dict, dep_id: str, file_path: str, file_type: str, overwrite: bool = False):
     """`upload` command handler"""
-    # FIXME: implement
+    if not file_path:
+        raise click.BadParameter("File path is required")
+    if not file_type:
+        raise click.BadParameter("File type is required")
+    if not os.path.exists(file_path):
+        raise click.BadParameter("File does not exist")
 
+    file_type = get_file_type_enum(file_type)
+    file = api.upload_file(dep_id, file_path, file_type, overwrite)
+    click.echo(f"Uploaded file: {file}")
+    #FIXME: Bug in the endpoint
 
-@files_group.command(name="list", help="List files in deposition")
+@files_group.command(name="get", help="Get files in deposition")
 @click.argument("dep_id")
-def list(dep_id):
+@click.pass_context
+@create_api
+def get(api: DepositApi, ctx: Dict, dep_id: str):
     """`list` command handler"""
-    # FIXME: implement
+    files = api.get_files(dep_id)
+    for file in files:
+        click.echo(file)
+        click.echo("---------------------------------")
+
+    # FIXME: Bug in the endpoint
 
 
 @files_group.command(name="remove", help="Remove a file from the deposition")
 @click.argument("file_id")
 @click.argument("dep_id")
-def remove(file_id, dep_id):
+@click.pass_context
+@create_api
+def remove(api: DepositApi, ctx: Dict, dep_id: str, file_id: str):
     """`remove` command handler"""
-    # FIXME: implement
+    file_removed = api.remove_file(dep_id, file_id)
+    if file_removed:
+        click.echo(f"File {file_id} was removed from the deposition {dep_id}.")
+    # FIXME: Bug in the endpoint
 
 
 @click.group()
@@ -207,9 +236,10 @@ def cli(ctx: dict, hostname: str, no_ssl_verify: bool):
     ctx.obj["no_ssl_verify"] = no_ssl_verify
 
 @cli.command(name="version", help="Show the version and exit.")
+@click.version_option(f"{VERSION}")
 def version():
     """`version` command handler"""
-    # FIXME: implement
+    click.echo(f"OneDep Deposition API version {VERSION}")
 
 
 cli.add_command(deposition_group)
