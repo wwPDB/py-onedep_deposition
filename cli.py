@@ -37,7 +37,7 @@ def deposition_group():
 @click.option("-E", "--related_emdb", "related_emdb", help="Related EMDB code. Only valid for EM and EC")
 @click.option("-B", "--related_bmrb", "related_bmrb", help="Related BMRB code. Only valid for NMR")
 @click.option("-p", "--password", "password", help="Deposition password")
-@click.option("-h", "--hostname", "hostname", help="Deposition hostname (Default: https://deposit.wwpdb.org/deposition)")
+@click.option("-h", "--hostname", "hostname", help="Deposition hostname (Default: defined from the country)")
 @click.option("-v", "--ssl_verify", "ssl_verify", help="SSL verification (Default: True)")
 def create(dep_type: str, email: str, users: List[str], country_string: str, subtype: str, related_emdb: str,
            related_bmrb: str, password: str, hostname: str, ssl_verify: bool):

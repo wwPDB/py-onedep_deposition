@@ -117,7 +117,9 @@ class Experiment:
 
     def json(self):
         json_object = self.__dict__.copy()
-        json_object = {key[1:]: value for key, value in json_object.items()}
+        json_object = {key[1:]: value for key, value in json_object.items() if value is not None}
+
+        print(json_object)
 
         if self.type:
             json_object['type'] = self._type.value
@@ -165,7 +167,7 @@ class DepositError:
 
     def json(self):
         json_object =  self.__dict__.copy()
-        json_object = {key[1:]: value for key, value in json_object.items()}
+        json_object = {key[1:]: value for key, value in json_object.items() if value is not None}
         return json_object
 
 
@@ -304,7 +306,7 @@ class Deposit:
 
     def json(self):
         json_object = self.__dict__.copy()
-        json_object = {key[1:]: value for key, value in json_object.items()}
+        json_object = {key[1:]: value for key, value in json_object.items() if value is not None}
         json_object['experiments'] = []
         json_object['errors'] = []
         json_object['status'] = self._status.name
@@ -392,7 +394,7 @@ class Depositor:
 
     def json(self):
         json_object = self.__dict__.copy()
-        json_object = {key[1:]: value for key, value in json_object.items()}
+        json_object = {key[1:]: value for key, value in json_object.items() if value is not None}
         json_object["depositions"] = []
 
         for deposition in self._depositions:
