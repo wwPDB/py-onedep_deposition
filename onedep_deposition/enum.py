@@ -2,11 +2,21 @@ import enum
 
 
 class Status(enum.Enum):
-    # TODO: Add more
     DEP = '1'
     PROC = '2'
     AUTH = '3'
     REPL = '4'
+    AUCO = '5'
+    AUXS = '6'
+    AUXU = '7'
+    HOLD = '8'
+    HPUB = '9'
+    OBS = '10'
+    POLC = '11'
+    REL = '12'
+    REUP = '13'
+    WAIT = '14'
+    WDRN = '15'
 
 
 class ExperimentType(enum.Enum):
