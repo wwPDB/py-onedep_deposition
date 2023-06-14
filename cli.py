@@ -9,7 +9,7 @@ def get_api_key():
     """Get API key from the file system or environment variable"""
     if os.path.isfile(os.path.expanduser("~/onedepapi.jwt")):
         with open(os.path.expanduser("~/onedepapi.jwt"), "r") as f:
-            api_key = f.read()
+            api_key = f.read().strip()
     else:
         api_key = os.environ.get("ONEDEP_API_KEY")
     if not api_key:
@@ -23,6 +23,25 @@ def get_country_enum(country_string: str):
         if country.value == country_string:
             return country
     raise click.BadParameter("Invalid country, options are: " + ", ".join([country.value for country in Country]))
+
+
+def create_api(func):
+    def decorator(ctx, *args, **kwargs):
+        hostname = ctx.obj["hostname"]
+        no_ssl_verify = ctx.obj["no_ssl_verify"]
+
+        api_args = {
+            "api_key": get_api_key()
+        }
+        if hostname:
+            api_args["hostname"] = hostname
+        if not no_ssl_verify:
+            api_args["ssl_verify"] = True
+        api = DepositApi(**api_args)
+
+        return func(api, ctx, *args, **kwargs)
+
+    return decorator
 
 @click.group(name="deposition", help="Manage depositions")
 def deposition_group():
@@ -39,8 +58,10 @@ def deposition_group():
 @click.option("-p", "--password", "password", help="Deposition password")
 @click.option("-h", "--hostname", "hostname", help="Deposition hostname (Default: defined from the country)")
 @click.option("--no_ssl_verify", "no_ssl_verify", is_flag=True, help="Disable SSL verification")
-def create(dep_type: str, email: str, users: List[str], country_string: str, subtype: str, related_emdb: str,
-           related_bmrb: str, password: str, hostname: str, no_ssl_verify: bool):
+@click.pass_context
+@create_api
+def create(api: DepositApi, ctx: dict, dep_type: str, email: str, users: List[str], country_string: str, subtype: str,
+           related_emdb: str, related_bmrb: str, password: str, hostname: str, no_ssl_verify: bool):
     """`create` command handler"""
     if subtype:
         if subtype not in ["helical", "single", "subtomogram", "tomography"]:
@@ -59,15 +80,6 @@ def create(dep_type: str, email: str, users: List[str], country_string: str, sub
             raise click.BadParameter("Invalid EMDB code")
     country = get_country_enum(country_string)
 
-    args= {
-        "api_key": get_api_key()
-    }
-    if hostname:
-        args["hostname"] = hostname
-    if not no_ssl_verify:
-        args["ssl_verify"] = True
-    api = DepositApi(**args)
-
     if dep_type == "em":
         deposition = api.create_em_deposition(email, users, country, subtype, related_emdb, password)
     elif dep_type == "xray":
@@ -85,27 +97,28 @@ def create(dep_type: str, email: str, users: List[str], country_string: str, sub
     else:
         raise click.BadParameter("Invalid experiment type, options are: em, xray, fiber, neutron, ec, nmr, ssnmr")
     print(deposition)
-
-
-
-
-
-
+    #FIXME: Cast __str__ into experiment
 
 @deposition_group.command(name="get", help="Get deposition info")
 @click.argument("dep_id")
-def get(dep_id):
+@click.pass_context
+@create_api
+def get(api: DepositApi, ctx: dict, dep_id: str):
     """`get` command handler"""
+    deposition = api.get_deposition(dep_id)
+    print(deposition)
 
 
 @deposition_group.command(name="status", help="Status of processing")
 def status():
     """`status` command handler"""
+    #FIXME: implement
 
 
 @deposition_group.command(name="process", help="Process deposition. TODO.")
 def process():
     """`process` command handler"""
+    # FIXME: implement
 
 
 @click.group(name="users", help="Manage deposition access")
@@ -115,31 +128,46 @@ def users_group():
 
 @users_group.command(name="get", help="Get users in deposition")
 @click.argument("dep_id")
-def get(dep_id):
+@click.pass_context
+@create_api
+def get(api: DepositApi, ctx: dict, dep_id: str):
     """`get` command handler"""
+    users = api.get_users(dep_id)
+    for user in users:
+        print(user)
+        print("---------------------------------")
 
 
 @users_group.command(name="add", help="Add users to the deposition")
 @click.argument("dep_id")
-def add(dep_id):
+@click.argument("orcid")
+@click.pass_context
+@create_api
+def add(api: DepositApi, ctx: dict, dep_id: str, orcid: str):
     """`add` command handler"""
+    user = api.add_user(dep_id, orcid=orcid)
+    #FIXME Add tostring
+    print(user)
 
 
 @users_group.command(name="remove", help="Remove an user from a deposition")
 @click.argument("dep_id")
 def remove(dep_id):
     """`remove` command handler"""
+    # FIXME: implement
 
 
 @users_group.command(name="summary", help="Generate a summary of the command line interface, to be used somewhere else, from the CLI specification file pointed by FILENAME.")
 @click.argument("dep_id")
 def summary(dep_id):
     """`summary` command handler"""
+    # FIXME: implement
 
 
 @click.group(name="files", help="Manage deposition files")
 def files_group():
     """`files` command group"""
+    # FIXME: implement
 
 
 @files_group.command(name="upload", help="Upload a file to the deposition")
@@ -149,12 +177,14 @@ def files_group():
 @click.option("-o", "--overwrite", "overwrite", help="Overwrite destination file if file with same name is present")
 def upload(file_path, file_type, dep_id, overwrite):
     """`upload` command handler"""
+    # FIXME: implement
 
 
 @files_group.command(name="list", help="List files in deposition")
 @click.argument("dep_id")
 def list(dep_id):
     """`list` command handler"""
+    # FIXME: implement
 
 
 @files_group.command(name="remove", help="Remove a file from the deposition")
@@ -162,16 +192,23 @@ def list(dep_id):
 @click.argument("dep_id")
 def remove(file_id, dep_id):
     """`remove` command handler"""
+    # FIXME: implement
 
 
 @click.group()
-def cli():
+@click.option("-h", "--hostname", "hostname", help="Deposition hostname (Default: defined from the country)")
+@click.option("--no_ssl_verify", "no_ssl_verify", is_flag=True, help="Disable SSL verification")
+@click.pass_context
+def cli(ctx: dict, hostname: str, no_ssl_verify: bool):
     """CLI entry point"""
-
+    ctx.ensure_object(dict)
+    ctx.obj["hostname"] = hostname
+    ctx.obj["no_ssl_verify"] = no_ssl_verify
 
 @cli.command(name="version", help="Show the version and exit.")
 def version():
     """`version` command handler"""
+    # FIXME: implement
 
 
 cli.add_command(deposition_group)
@@ -180,4 +217,4 @@ cli.add_command(files_group)
 
 
 if __name__ == "__main__":
-    cli()
+    cli(obj={})

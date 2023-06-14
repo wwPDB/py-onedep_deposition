@@ -197,10 +197,12 @@ class DepositApi:
         :param dep_id:
         :return: Depositor
         """
-        # TODO: This endpoint is missing
-        response = self._rest_adapter.get(f"depositions/{dep_id}/users")  # noqa: F841
-        # FIXME
-        return None
+        users = []
+        response = self._rest_adapter.get(f"depositions/{dep_id}/users/")
+        for user_json in response.data:
+            user = Depositor(**user_json)
+            users.append(user)
+        return users
 
     def add_user(self, dep_id: str, orcid: Union[List, str]) -> List[Depositor]:
         """
