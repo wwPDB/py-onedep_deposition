@@ -300,7 +300,8 @@ class Deposit:
         self._site_url = str(value)
 
     def __str__(self):
-        return f"ID: {self._id}\nE-mail: {self._email}\nEntry ID: {self._entry_id}\nTitle: {self._title}\nCreated: {self._created}\nLast login: {self._last_login}\nSite: {self._site}\nStatus: {self._status}\nSite URL: {self._site_url}\nExperiments: {self._experiments}\nErrors: {self._errors}"  # noqa: E501
+        experiments_text = [str(exp) for exp in self._experiments]
+        return f"ID: {self._id}\nE-mail: {self._email}\nEntry ID: {self._entry_id}\nTitle: {self._title}\nCreated: {self._created}\nLast login: {self._last_login}\nSite: {self._site}\nStatus: {self._status}\nSite URL: {self._site_url}\nExperiments: {experiments_text}\nErrors: {self._errors}"  # noqa: E501
 
     def json(self):
         json_object = self.__dict__.copy()

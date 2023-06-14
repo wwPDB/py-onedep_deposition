@@ -1,7 +1,7 @@
 import click
 import re
 import os
-from typing import List
+from typing import List, Union, Dict
 from onedep_deposition.deposit_api import DepositApi
 from onedep_deposition.enum import Country
 
@@ -26,6 +26,7 @@ def get_country_enum(country_string: str):
 
 
 def create_api(func):
+    """Decorator to create the API object"""
     def decorator(ctx, *args, **kwargs):
         hostname = ctx.obj["hostname"]
         no_ssl_verify = ctx.obj["no_ssl_verify"]
@@ -56,13 +57,11 @@ def deposition_group():
 @click.option("-E", "--related_emdb", "related_emdb", help="Related EMDB code. Only valid for EM and EC")
 @click.option("-B", "--related_bmrb", "related_bmrb", help="Related BMRB code. Only valid for NMR")
 @click.option("-p", "--password", "password", help="Deposition password")
-@click.option("-h", "--hostname", "hostname", help="Deposition hostname (Default: defined from the country)")
-@click.option("--no_ssl_verify", "no_ssl_verify", is_flag=True, help="Disable SSL verification")
 @click.pass_context
 @create_api
-def create(api: DepositApi, ctx: dict, dep_type: str, email: str, users: List[str], country_string: str, subtype: str,
-           related_emdb: str, related_bmrb: str, password: str, hostname: str, no_ssl_verify: bool):
-    """`create` command handler"""
+def create(api: DepositApi, ctx: Dict, dep_type: str, email: str, users: List[str], country_string: str, subtype: str,
+           related_emdb: str, related_bmrb: str, password: str):
+    """`create` deposition command handler"""
     if subtype:
         if subtype not in ["helical", "single", "subtomogram", "tomography"]:
             raise click.BadParameter("Invalid experiment subtype, options are: helical, single, subtomogram, tomography")
@@ -97,14 +96,13 @@ def create(api: DepositApi, ctx: dict, dep_type: str, email: str, users: List[st
     else:
         raise click.BadParameter("Invalid experiment type, options are: em, xray, fiber, neutron, ec, nmr, ssnmr")
     print(deposition)
-    #FIXME: Cast __str__ into experiment
 
 @deposition_group.command(name="get", help="Get deposition info")
 @click.argument("dep_id")
 @click.pass_context
 @create_api
-def get(api: DepositApi, ctx: dict, dep_id: str):
-    """`get` command handler"""
+def get(api: DepositApi, ctx: Dict, dep_id: str):
+    """`get` deposition command handler"""
     deposition = api.get_deposition(dep_id)
     print(deposition)
 
@@ -130,8 +128,8 @@ def users_group():
 @click.argument("dep_id")
 @click.pass_context
 @create_api
-def get(api: DepositApi, ctx: dict, dep_id: str):
-    """`get` command handler"""
+def get(api: DepositApi, ctx: Dict, dep_id: str):
+    """`get` users command handler"""
     users = api.get_users(dep_id)
     for user in users:
         print(user)
@@ -140,11 +138,15 @@ def get(api: DepositApi, ctx: dict, dep_id: str):
 
 @users_group.command(name="add", help="Add users to the deposition")
 @click.argument("dep_id")
-@click.argument("orcid")
+@click.option("-o", "--orcid", "orcid", multiple=True, help="User orcid to be removed from the deposition")
 @click.pass_context
 @create_api
-def add(api: DepositApi, ctx: dict, dep_id: str, orcid: str):
-    """`add` command handler"""
+def add(api: DepositApi, ctx: Dict, dep_id: str, orcid: Union[List, str]):
+    """`add` users command handler"""
+    if len(orcid) == 1:
+        orcid = orcid[0]
+    else:
+        orcid = list(orcid)
     users = api.add_user(dep_id, orcid=orcid)
     for user in users:
         print(user)
@@ -153,16 +155,14 @@ def add(api: DepositApi, ctx: dict, dep_id: str, orcid: str):
 
 @users_group.command(name="remove", help="Remove an user from a deposition")
 @click.argument("dep_id")
-def remove(dep_id):
+@click.option("-o", "--orcid", "orcid", multiple=False, help="User orcid to be removed from the deposition")
+@click.pass_context
+@create_api
+def remove(api: DepositApi, ctx: Dict, dep_id: str, orcid: str):
     """`remove` command handler"""
-    # FIXME: implement
-
-
-@users_group.command(name="summary", help="Generate a summary of the command line interface, to be used somewhere else, from the CLI specification file pointed by FILENAME.")
-@click.argument("dep_id")
-def summary(dep_id):
-    """`summary` command handler"""
-    # FIXME: implement
+    used_deleted = api.remove_user(dep_id, orcid)
+    if used_deleted:
+        print(f"User {orcid} was removed from the deposition {dep_id}.")
 
 
 @click.group(name="files", help="Manage deposition files")
