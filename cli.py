@@ -196,7 +196,6 @@ def upload(api: DepositApi, ctx: Dict, dep_id: str, file_path: str, file_type: s
     file_type = get_file_type_enum(file_type)
     file = api.upload_file(dep_id, file_path, file_type, overwrite)
     click.echo(f"Uploaded file: {file}")
-    #FIXME: Bug in the endpoint
 
 @files_group.command(name="get", help="Get files in deposition")
 @click.argument("dep_id")
@@ -209,9 +208,6 @@ def get(api: DepositApi, ctx: Dict, dep_id: str):
         click.echo(file)
         click.echo("---------------------------------")
 
-    # FIXME: Bug in the endpoint
-
-
 @files_group.command(name="remove", help="Remove a file from the deposition")
 @click.argument("dep_id")
 @click.argument("file_id")
@@ -222,8 +218,6 @@ def remove(api: DepositApi, ctx: Dict, dep_id: str, file_id: int):
     file_removed = api.remove_file(dep_id, file_id)
     if file_removed:
         click.echo(f"File {file_id} was removed from the deposition {dep_id}.")
-    # FIXME: Bug in the endpoint
-
 
 @click.group()
 @click.option("-h", "--hostname", "hostname", help="Deposition hostname (Default: defined from the country)")
