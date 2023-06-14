@@ -145,9 +145,10 @@ def get(api: DepositApi, ctx: dict, dep_id: str):
 @create_api
 def add(api: DepositApi, ctx: dict, dep_id: str, orcid: str):
     """`add` command handler"""
-    user = api.add_user(dep_id, orcid=orcid)
-    #FIXME Add tostring
-    print(user)
+    users = api.add_user(dep_id, orcid=orcid)
+    for user in users:
+        print(user)
+        print("---------------------------------")
 
 
 @users_group.command(name="remove", help="Remove an user from a deposition")
