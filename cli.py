@@ -38,9 +38,9 @@ def deposition_group():
 @click.option("-B", "--related_bmrb", "related_bmrb", help="Related BMRB code. Only valid for NMR")
 @click.option("-p", "--password", "password", help="Deposition password")
 @click.option("-h", "--hostname", "hostname", help="Deposition hostname (Default: defined from the country)")
-@click.option("-v", "--ssl_verify", "ssl_verify", help="SSL verification (Default: True)")
+@click.option("--no_ssl_verify", "no_ssl_verify", is_flag=True, help="Disable SSL verification")
 def create(dep_type: str, email: str, users: List[str], country_string: str, subtype: str, related_emdb: str,
-           related_bmrb: str, password: str, hostname: str, ssl_verify: bool):
+           related_bmrb: str, password: str, hostname: str, no_ssl_verify: bool):
     """`create` command handler"""
     if subtype:
         if subtype not in ["helical", "single", "subtomogram", "tomography"]:
@@ -64,8 +64,8 @@ def create(dep_type: str, email: str, users: List[str], country_string: str, sub
     }
     if hostname:
         args["hostname"] = hostname
-    if ssl_verify:
-        args["ssl_verify"] = ssl_verify
+    if not no_ssl_verify:
+        args["ssl_verify"] = True
     api = DepositApi(**args)
 
     if dep_type == "em":

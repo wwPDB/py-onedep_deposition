@@ -61,8 +61,8 @@ class Experiment:
         """
         self._type = None
         self._subtype = None
-        self._related_emdb = str(related_emdb)
-        self._related_bmrb = str(related_bmrb)
+        self._related_emdb = str(related_emdb) if related_emdb is not None else None
+        self._related_bmrb = str(related_bmrb) if related_bmrb is not None else None
 
         if type(exp_type) == ExperimentType:
             self.type = exp_type
@@ -118,8 +118,6 @@ class Experiment:
     def json(self):
         json_object = self.__dict__.copy()
         json_object = {key[1:]: value for key, value in json_object.items() if value is not None}
-
-        print(json_object)
 
         if self.type:
             json_object['type'] = self._type.value
@@ -199,7 +197,7 @@ class Deposit:
         self._status = getattr(Status, status)
         self._experiments = []
         self._errors = []
-        self._site_url = str(site_url)
+        self._site_url = str(site_url) if site_url is not None else None
 
         if experiments:
             for exp in experiments:
