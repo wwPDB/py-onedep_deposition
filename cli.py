@@ -1,6 +1,7 @@
 import click
 import re
 import os
+import json
 from typing import List, Union, Dict
 from onedep_deposition.deposit_api import DepositApi
 from onedep_deposition.enum import Country, FileType
@@ -116,15 +117,49 @@ def get(api: DepositApi, ctx: Dict, dep_id: str):
 
 
 @deposition_group.command(name="status", help="Status of processing")
-def status():
+@click.argument("dep_id")
+@click.pass_context
+@create_api
+def status(api: DepositApi, ctx: Dict, dep_id: str):
     """`status` command handler"""
-    #FIXME: implement
+    response = api.get_status(dep_id)
+    click.echo(response)
 
 
-@deposition_group.command(name="process", help="Process deposition. TODO.")
-def process():
+@deposition_group.command(name="process", help="Process deposition.")
+@click.argument("dep_id")
+@click.option("-V", "--voxels-json", "voxels_json", help='JSON file including the list of voxel values in the following format ([{"file_id": X, "spacing": Y, "contour": Z}, ...])')
+@click.option("-c", "--copy-from-id", "copy_dep_id", help='Deposition ID to copy metadata from')
+@click.option("--copy-all", "copy_all", is_flag=True, help="Copy all metadata from a previous deposition")
+@click.option("--copy-contact", "copy_contact", is_flag=True, help="Copy contact metadata from a previous deposition")
+@click.option("--copy-authors", "copy_authors", is_flag=True, help="Copy authors metadata from a previous deposition")
+@click.option("--copy-citation", "copy_citation", is_flag=True, help="Copy citation metadata from a previous deposition")
+@click.option("--copy-grant", "copy_grant", is_flag=True, help="Copy grant metadata from a previous deposition")
+@click.option("--copy-em-exp", "copy_em_exp", is_flag=True, help="Copy EM experiment metadata from a previous deposition")
+@click.pass_context
+@create_api
+def process(api: DepositApi, ctx: Dict, dep_id: str, voxels_json: str, copy_dep_id: str, copy_all: bool = False,
+            copy_contact: bool = False, copy_authors: bool = False, copy_citation: bool = False,
+            copy_grant: bool = False, copy_em_exp: bool = False):
     """`process` command handler"""
-    # FIXME: implement
+    copy_elements = {"copy_contact": False, "copy_authors": False, "copy_citation": False, "copy_grant": False, "copy_em_exp_data": False}
+    if copy_dep_id:
+        copy_elements = {"copy_contact": copy_contact, "copy_authors": copy_authors, "copy_citation": copy_citation,
+                         "copy_grant": copy_grant, "copy_em_exp_data": copy_em_exp}
+        if copy_all:
+            copy_elements = {"copy_contact": True, "copy_authors": True, "copy_citation": True, "copy_grant": True, "copy_em_exp_data": True}
+
+    if voxels_json:
+        if not os.path.isfile(voxels_json):
+            raise click.BadParameter("Voxel file not found")
+        with open(voxels_json) as f:
+            voxel = json.load(f)
+    else:
+        voxel = None
+
+    response = api.process(dep_id, voxel=voxel, copy_from_id=copy_dep_id, **copy_elements)
+    click.echo(response)
+
 
 
 @click.group(name="users", help="Manage deposition access")

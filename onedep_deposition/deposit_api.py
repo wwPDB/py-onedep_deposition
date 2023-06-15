@@ -303,7 +303,7 @@ class DepositApi:
         status = DepositStatus(**response.data)
         return status
 
-    def process(self, dep_id: str, voxel: List = None, copy_from_id: int = None, copy_contact: bool = False,
+    def process(self, dep_id: str, voxel: List = None, copy_from_id: str = None, copy_contact: bool = False,
                 copy_authors: bool = False, copy_citation: bool = False, copy_grant: bool = False,
                 copy_em_exp_data: bool = False):
         """
@@ -336,8 +336,8 @@ class DepositApi:
             data['parameters']['voxel'] = voxel
 
         response = self._rest_adapter.post(f"depositions/{dep_id}/process", data=data)
+
+        # TODO: Second process will return DepositError instead of DepositStatus
         status = DepositStatus(**response.data)
 
         return status
-
-    # TODO: Add get user endpoint
