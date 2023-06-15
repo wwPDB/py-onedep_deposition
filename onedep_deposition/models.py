@@ -168,6 +168,9 @@ class DepositError:
         json_object = {key[1:]: value for key, value in json_object.items() if value is not None}
         return json_object
 
+    def __str__(self):
+        return f"CODE: {self._code}, MESSAGE: {self._message}\nEXTRAS: {self._extras}"
+
 
 class Deposit:
     """Class representing an deposit"""

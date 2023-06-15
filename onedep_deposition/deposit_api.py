@@ -1,6 +1,6 @@
 import logging
 from onedep_deposition.rest_adapter import RestAdapter
-from onedep_deposition.models import DepositStatus, Experiment, Deposit, Depositor, DepositedFile, DepositedFilesSet
+from onedep_deposition.models import DepositStatus, Experiment, Deposit, Depositor, DepositedFile, DepositedFilesSet, DepositError
 from onedep_deposition.enum import Country, EMSubType, FileType
 from onedep_deposition.exceptions import DepositApiException
 from onedep_deposition.constants import countries_to_site
@@ -336,8 +336,9 @@ class DepositApi:
             data['parameters']['voxel'] = voxel
 
         response = self._rest_adapter.post(f"depositions/{dep_id}/process", data=data)
-
-        # TODO: Second process will return DepositError instead of DepositStatus
-        status = DepositStatus(**response.data)
+        try:
+            status = DepositStatus(**response.data)
+        except TypeError:
+            status = DepositError(**response.data)
 
         return status
