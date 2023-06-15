@@ -2,11 +2,21 @@ import enum
 
 
 class Status(enum.Enum):
-    # TODO: Add more
     DEP = '1'
     PROC = '2'
     AUTH = '3'
     REPL = '4'
+    AUCO = '5'
+    AUXS = '6'
+    AUXU = '7'
+    HOLD = '8'
+    HPUB = '9'
+    OBS = '10'
+    POLC = '11'
+    REL = '12'
+    REUP = '13'
+    WAIT = '14'
+    WDRN = '15'
 
 
 class ExperimentType(enum.Enum):
@@ -143,7 +153,7 @@ class Country(enum.Enum):
     KIRIBATI = "Kiribati"
     KUWAIT = "Kuwait"
     KYRGYZSTAN = "Kyrgyzstan"
-    LAOS = "Lao People'S Democratic Republic",
+    LAOS = "Lao People'S Democratic Republic"
     LATVIA = "Latvia"
     LEBANON = "Lebanon"
     LESOTHO = "Lesotho"
@@ -187,7 +197,7 @@ class Country(enum.Enum):
     NIGERIA = "Nigeria"
     NIUE = "Niue"
     NORFOLK = "Norfolk Island"
-    NORTH_KOREA = "Korea, Democratic People'S Republic Of",
+    NORTH_KOREA = "Korea, Democratic People'S Republic Of"
     NORTHERN_MARIANA = "Northern Mariana Islands"
     NORWAY = "Norway"
     OMAN = "Oman"

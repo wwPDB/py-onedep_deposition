@@ -1,16 +1,17 @@
 import logging
 from onedep_deposition.rest_adapter import RestAdapter
-from onedep_deposition.models import DepositStatus, Experiment, Deposit, Depositor, DepositedFile, DepositedFilesSet
+from onedep_deposition.models import DepositStatus, Experiment, Deposit, Depositor, DepositedFile, DepositedFilesSet, DepositError
 from onedep_deposition.enum import Country, EMSubType, FileType
 from onedep_deposition.exceptions import DepositApiException
+from onedep_deposition.constants import countries_to_site
 from typing import List, Union
 import mimetypes
 import os
 
 
 class DepositApi:
-    # TODO: Change default hostname
-    def __init__(self, hostname: str = 'http://local.wwpdb.org:12000/deposition', api_key: str = '', ver: str = 'v1',
+    """Deposit API wrapper"""
+    def __init__(self, hostname: str = None, api_key: str = '', ver: str = 'v1',
                  ssl_verify: bool = True, logger: logging.Logger = None):
         """
         Constructor method for DepositAPI wrapper
@@ -20,7 +21,23 @@ class DepositApi:
         :param ssl_verify: Perform a SSL verification? True for production
         :param logger: Attach a logger
         """
-        self.rest_adapter = RestAdapter(hostname, api_key, ver, ssl_verify, logger)
+        self.given_hostname = hostname
+        if not hostname:
+            # Default hostname is RCSB until a deposition is created
+            hostname = "https://deposit.wwpdb.org/deposition"
+        self._rest_adapter = RestAdapter(hostname, api_key, ver, ssl_verify, logger)
+
+    def _get_site_from_country(self, country: Country) -> str:
+        """
+        Determine the wwPDB site from country
+        :param country: Country from enum list
+        :return: Site url
+        """
+        lower_country = country.value.lower()
+        if lower_country in countries_to_site:
+            return countries_to_site[country.value.lower()]
+        else:
+            raise DepositApiException("Invalid country", 400)
 
     def create_deposition(self, email: str, users: List[str], country: Country, experiments: List[Experiment], password: str = "", **kwargs) -> Deposit:
         """
@@ -40,7 +57,12 @@ class DepositApi:
         }
         if password:
             data["password"] = password
-        response = self.rest_adapter.post("depositions/new", data=data)
+
+        # If a hostname was not given in the class constructor, get one from the country
+        if not self.given_hostname:
+            self._rest_adapter.hostname = self._get_site_from_country(country)
+
+        response = self._rest_adapter.post("depositions/new", data=data)
         deposit = Deposit(**response.data)
         return deposit
 
@@ -147,7 +169,7 @@ class DepositApi:
         :return: Deposit
         """
         try:
-            response = self.rest_adapter.get(f"depositions/{dep_id}")
+            response = self._rest_adapter.get(f"depositions/{dep_id}")
             deposit = Deposit(**response.data)
         except DepositApiException as e:
             if e.status_code == 404:
@@ -163,7 +185,7 @@ class DepositApi:
         :return: List[Deposit]
         """
         depositions = []
-        response = self.rest_adapter.get("depositions/")
+        response = self._rest_adapter.get("depositions/")
         for deposition_json in response.data["items"]:
             deposition = Deposit(**deposition_json)
             depositions.append(deposition)
@@ -175,10 +197,12 @@ class DepositApi:
         :param dep_id:
         :return: Depositor
         """
-        # TODO: This endpoint is missing
-        response = self.rest_adapter.get(f"depositions/{dep_id}/users")  # noqa: F841
-        # FIXME
-        return None
+        users = []
+        response = self._rest_adapter.get(f"depositions/{dep_id}/users/")
+        for user_json in response.data:
+            user = Depositor(**user_json)
+            users.append(user)
+        return users
 
     def add_user(self, dep_id: str, orcid: Union[List, str]) -> List[Depositor]:
         """
@@ -194,7 +218,7 @@ class DepositApi:
         elif type(orcid) == list:
             for orcid_id in orcid:
                 data.append({'orcid': orcid_id})
-        response = self.rest_adapter.post(f"depositions/{dep_id}/users/", data=data)
+        response = self._rest_adapter.post(f"depositions/{dep_id}/users/", data=data)
         for user_json in response.data:
             users.append(Depositor(**user_json))
 
@@ -207,7 +231,7 @@ class DepositApi:
         :param orcid: Orcid id
         :return: Depositor
         """
-        self.rest_adapter.delete(f"depositions/{dep_id}/users/{orcid}")
+        self._rest_adapter.delete(f"depositions/{dep_id}/users/{orcid}")
         return True
 
     def upload_file(self, dep_id: str, file_path: str, file_type: Union[str, FileType], overwrite: bool = False) -> DepositedFile:
@@ -239,12 +263,13 @@ class DepositApi:
         if overwrite:
             deposited_files = self.get_files(dep_id)
             for file in deposited_files:
-                if file.type.value == file_type_str:
+                if file.file_type.value == file_type_str:
                     self.remove_file(dep_id, file.id)
 
         with open(file_path, "rb") as fp:
             files["file"] = (file_name, fp, mime_type)
-            response = self.rest_adapter.post(f"depositions/{dep_id}/files/", data=data, files=files, content_type="")
+
+            response = self._rest_adapter.post(f"depositions/{dep_id}/files/", data=data, files=files, content_type="")
             response.data["file_type"] = response.data.pop("type")
 
             return DepositedFile(**response.data)
@@ -255,7 +280,7 @@ class DepositApi:
         :param dep_id: Deposition ID
         :return: List of uploaded files
         """
-        response = self.rest_adapter.get(f"depositions/{dep_id}/files/")
+        response = self._rest_adapter.get(f"depositions/{dep_id}/files/")
         return DepositedFilesSet(**response.data)
 
     def remove_file(self, dep_id: str, file_id: int):
@@ -265,7 +290,7 @@ class DepositApi:
         :param file_id: File ID
         :return: None
         """
-        self.rest_adapter.delete(f"depositions/{dep_id}/files/{file_id}")
+        self._rest_adapter.delete(f"depositions/{dep_id}/files/{file_id}")
         return True
 
     def get_status(self, dep_id: str) -> DepositStatus:
@@ -274,11 +299,11 @@ class DepositApi:
         :param dep_id: Deposition ID
         :return: Status
         """
-        response = self.rest_adapter.get(f"depositions/{dep_id}/status")
+        response = self._rest_adapter.get(f"depositions/{dep_id}/status")
         status = DepositStatus(**response.data)
         return status
 
-    def process(self, dep_id: str, voxel: List = None, copy_from_id: int = None, copy_contact: bool = False,
+    def process(self, dep_id: str, voxel: List = None, copy_from_id: str = None, copy_contact: bool = False,
                 copy_authors: bool = False, copy_citation: bool = False, copy_grant: bool = False,
                 copy_em_exp_data: bool = False):
         """
@@ -310,9 +335,10 @@ class DepositApi:
         if voxel:
             data['parameters']['voxel'] = voxel
 
-        response = self.rest_adapter.post(f"depositions/{dep_id}/process", data=data)
-        status = DepositStatus(**response.data)
+        response = self._rest_adapter.post(f"depositions/{dep_id}/process", data=data)
+        try:
+            status = DepositStatus(**response.data)
+        except TypeError:
+            status = DepositError(**response.data)
 
         return status
-
-    # TODO: Add get user endpoint

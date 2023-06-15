@@ -8,7 +8,7 @@ from onedep_deposition.models import Response
 
 
 class RestAdapter:
-    def __init__(self, hostname: str, api_key: str = '', ver: str = 'v1', ssl_verify: bool = True,
+    def __init__(self, hostname: str, api_key: str = '', ver: str = 'v1', ssl_verify: bool = True, timeout: int = 300,
                  logger: logging.Logger = None):
         """
         Constructor for RestAdapter
@@ -16,12 +16,14 @@ class RestAdapter:
         :param api_key: (optional) string used for authentication when POSTing or DELETEing
         :param ver: always v1
         :param ssl_verify: Normally set to True, but if having SSL/TLS cert validation issues, can turn off with False
+        :param timeout: (optional) Timeout in seconds for API calls
         :param logger: (optional) If your app has a logger, pass it in here.
         """
         self._logger = logger or logging.getLogger(__name__)
         self.url = "{}/api/{}/".format(hostname, ver)
         self._api_key = api_key
         self._ssl_verify = ssl_verify
+        self._timeout = timeout
         if not ssl_verify:
             requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -48,10 +50,10 @@ class RestAdapter:
             self._logger.debug(msg=log_line_pre)
             if 'Content-Type' in headers and headers['Content-Type'] == 'application/json':
                 response = requests.request(method=http_method, url=full_url, verify=self._ssl_verify, headers=headers,
-                                            params=params, json=data, files=files)
+                                            params=params, json=data, files=files, timeout=self._timeout)
             else:
                 response = requests.request(method=http_method, url=full_url, verify=self._ssl_verify, headers=headers,
-                                            params=params, data=data, files=files)
+                                            params=params, data=data, files=files, timeout=self._timeout)
         except requests.exceptions.RequestException as e:
             self._logger.error(msg=(str(e)))
             raise DepositApiException("Failed to access the API", 403) from e
