@@ -45,7 +45,9 @@ def create_api(func):
         }
         if hostname:
             api_args["hostname"] = hostname
-        if not no_ssl_verify:
+        if no_ssl_verify:
+            api_args["ssl_verify"] = False
+        else:
             api_args["ssl_verify"] = True
         api = DepositApi(**api_args)
 
