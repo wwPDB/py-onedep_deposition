@@ -209,7 +209,6 @@ class Deposit:
                     exp["exp_type"] = exp.pop("type")
                 self._experiments.append(Experiment(**exp))
 
-        # FIXME: Error is coming as a string
         if errors:
             for error in errors:
                 self._errors.append(DepositError(**error))
@@ -428,8 +427,8 @@ class DepositedFile:
         else:
             self._type = file_type
 
-        self._errors = [error for error in errors if error != ""] if errors else []
-        self._warnings = [warning for warning in warnings if warning != ""] if warnings else []
+        self._errors = [DepositError(**error) for error in errors if error != ""] if errors else []
+        self._warnings = [DepositError(**warning) for warning in warnings if warning != ""] if warnings else []
 
     def __str__(self):
         message = f"ID: {self._id}\nCREATED ON: {self._created}\nNAME: {self._name}\nTYPE: {self._type}\nERRORS:\n"
@@ -483,7 +482,7 @@ class DepositedFile:
 
     @errors.setter
     def errors(self, value: List[str]):
-        self._errors = [error for error in value if error != ""] if value else []
+        self._errors = [DepositError(**error) for error in value if error != ""] if value else []
 
     @property
     def warnings(self) -> List[str]:
@@ -501,8 +500,8 @@ class DepositedFilesSet:
     def __init__(self, files: List[Dict], errors: List[str] = None, warnings: List[str] = None):
         """Constructor for deposited files set"""
         self._files = []
-        self._errors = [error for error in errors if error != ""] if errors else []
-        self._warnings = [warning for warning in warnings if warning != ""] if errors else []
+        self._errors = [DepositError(**error) for error in errors if error != ""] if errors else []
+        self._warnings = [DepositError(**warning) for warning in warnings if warning != ""] if errors else []
 
         for file in files:
             file["file_type"] = file.pop("type")
@@ -539,7 +538,7 @@ class DepositedFilesSet:
 
     @errors.setter
     def errors(self, value: List[str]):
-        self._errors = [error for error in value if error != ""] if value else []
+        self._errors = [DepositError(**error) for error in value if error != ""] if value else []
 
     @property
     def warnings(self) -> List[str]:
