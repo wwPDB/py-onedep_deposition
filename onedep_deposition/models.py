@@ -174,6 +174,7 @@ class DepositError:
 
 class Deposit:
     """Class representing an deposit"""
+    # TODO: Replace id for dep_id
     def __init__(self, email: str, id: str, entry_id: str, title: str, created: str, last_login: str, site: str,
                  status: Status, experiments: List = None, errors: List = None, site_url: str = None):
         """
@@ -321,6 +322,7 @@ class Deposit:
 
 class Depositor:
     """Class representing a depositor"""
+    # TODO: Replace id for dep_id
     def __init__(self, orcid: str, id: int, full_name: str, last_login: str = None, date_joined: str = None,
                  depositions: List[Deposit] = None):
         """Constructor for depositor
@@ -406,6 +408,7 @@ class Depositor:
 
 class DepositedFile:
     """Class representing a deposited file"""
+    # TODO: Replace id for dep_id
     def __init__(self, id: int, created: str, name: str, file_type: Union[str, FileType], errors: List[str] = None,
                  warnings: List[str] = None):
         """Constructor for deposited file
