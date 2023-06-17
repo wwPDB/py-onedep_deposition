@@ -175,7 +175,7 @@ class DepositError:
 class Deposit:
     """Class representing an deposit"""
     # TODO: Replace id for dep_id
-    def __init__(self, email: str, id: str, entry_id: str, title: str, created: str, last_login: str, site: str,
+    def __init__(self, email: str, id: str, entry_id: str, title: str, created: str, last_login: str, site: str,  # pylint: disable=redefined-builtin
                  status: Status, experiments: List = None, errors: List = None, site_url: str = None):
         """
         Constructor for Deposit
@@ -323,7 +323,7 @@ class Deposit:
 class Depositor:
     """Class representing a depositor"""
     # TODO: Replace id for dep_id
-    def __init__(self, orcid: str, id: int, full_name: str, last_login: str = None, date_joined: str = None,
+    def __init__(self, orcid: str, id: int, full_name: str, last_login: str = None, date_joined: str = None,  # pylint: disable=redefined-builtin
                  depositions: List[Deposit] = None):
         """Constructor for depositor
         :param orcid:
@@ -409,7 +409,7 @@ class Depositor:
 class DepositedFile:
     """Class representing a deposited file"""
     # TODO: Replace id for dep_id
-    def __init__(self, id: int, created: str, name: str, file_type: Union[str, FileType], errors: List[str] = None,
+    def __init__(self, id: int, created: str, name: str, file_type: Union[str, FileType], errors: List[str] = None,  # pylint: disable=redefined-builtin
                  warnings: List[str] = None):
         """Constructor for deposited file
         :param id:
@@ -506,6 +506,8 @@ class DepositedFilesSet:
         self._errors = [DepositError(**error) for error in errors if error != ""] if errors else []
         self._warnings = [DepositError(**warning) for warning in warnings if warning != ""] if errors else []
 
+        self.__current_index = 0
+
         for file in files:
             file["file_type"] = file.pop("type")
             self._files.append(DepositedFile(**file))
@@ -517,13 +519,13 @@ class DepositedFilesSet:
         return len(self._files)
 
     def __iter__(self):
-        self._current_index = 0
+        self.__current_index = 0
         return self
 
     def __next__(self):
-        if self._current_index < len(self._files):
-            item = self._files[self._current_index]
-            self._current_index += 1
+        if self.__current_index < len(self._files):
+            item = self._files[self.__current_index]
+            self.__current_index += 1
             return item
         raise StopIteration
 

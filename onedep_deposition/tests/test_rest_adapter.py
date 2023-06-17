@@ -11,33 +11,33 @@ class TestRestAdapter(unittest.TestCase):
         self.rest_adapter = RestAdapter("http://localhost")
         self.response = requests.Response()
         self.response.status_code = 200
-        self.response._content = "{}".encode()
+        self.response._content = "{}".encode()  # pylint: disable=protected-access
         self.deposit_response = Response(status_code=200)
 
     def test_do_successful_request(self):
         with mock.patch("requests.request", return_value=self.response):
-            result = self.rest_adapter._do('GET', '')
+            result = self.rest_adapter._do('GET', '')  # pylint: disable=protected-access
         self.assertIsInstance(result, Response)
         self.assertEqual(result.status_code, 200)
 
     def test_do_unsuccessful_request(self):
         self.response.status_code = 404
-        self.response._content = '{"error": "Not found"}'.encode()
+        self.response._content = '{"error": "Not found"}'.encode()  # pylint: disable=protected-access
         with mock.patch("requests.request", return_value=self.response):
             with self.assertRaises(DepositApiException):
-                self.rest_adapter._do('GET', '')
+                self.rest_adapter._do('GET', '')  # pylint: disable=protected-access
 
     def test_do_bad_json_response(self):
-        self.response._content = "Not a JSON response".encode()
+        self.response._content = "Not a JSON response".encode()  # pylint: disable=protected-access
         with mock.patch("requests.request", return_value=self.response):
             with self.assertRaises(DepositApiException) as cm:
-                self.rest_adapter._do('GET', '')
+                self.rest_adapter._do('GET', '')  # pylint: disable=protected-access
         self.assertEqual(str(cm.exception), "Bad JSON in response")
 
     def test_do_request_exception(self):
         with mock.patch("requests.request", side_effect=requests.exceptions.RequestException()):
             with self.assertRaises(DepositApiException) as cm:
-                self.rest_adapter._do('GET', '')
+                self.rest_adapter._do('GET', '')  # pylint: disable=protected-access
         self.assertEqual(str(cm.exception), "Failed to access the API")
 
     def test_get(self):

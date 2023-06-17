@@ -267,5 +267,5 @@ countries_to_site = {
     "french southern territories": "https://deposit-pdbe.wwpdb.org/deposition",
     "bouvet island": "https://deposit-pdbe.wwpdb.org/deposition",
     "heard island and mcdonald islands": "https://deposit-pdbe.wwpdb.org/deposition",
-    "antarctica": "https://deposit-pdbe.wwpdb.org/deposition"
+    "antarctica": "https://deposit-pdbe.wwpdb.org/deposition",
 }

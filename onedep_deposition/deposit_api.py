@@ -39,7 +39,8 @@ class DepositApi:
         else:
             raise DepositApiException("Invalid country", 400)
 
-    def create_deposition(self, email: str, users: List[str], country: Country, experiments: List[Experiment], password: str = "", **kwargs) -> Deposit:
+    def create_deposition(self, email: str, users: List[str], country: Country,  # pylint: disable=unused-argument
+                          experiments: List[Experiment], password: str = "", **kwargs) -> Deposit:
         """
         General method to create a deposition passing an Experiment object
         :param email: User e-mail
@@ -66,7 +67,8 @@ class DepositApi:
         deposit = Deposit(**response.data)
         return deposit
 
-    def create_em_deposition(self, email: str, users: List[str], country: Country, subtype: Union[EMSubType, str], related_emdb: str = None, password: str = "", **kwargs) -> Deposit:
+    def create_em_deposition(self, email: str, users: List[str], country: Country, subtype: Union[EMSubType, str],  # pylint: disable=unused-argument
+                             related_emdb: str = None, password: str = "", **kwargs) -> Deposit:
         """
         Create an EM deposition
         :param email: User e-mail
@@ -81,7 +83,7 @@ class DepositApi:
         deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
         return deposit
 
-    def create_xray_deposition(self, email: str, users: List[str], country: Country, password: str = "", **kwargs) -> Deposit:
+    def create_xray_deposition(self, email: str, users: List[str], country: Country, password: str = "", **kwargs) -> Deposit:  # pylint: disable=unused-argument
         """
         Create an XRAY deposition
         :param email: User e-mail
@@ -94,7 +96,7 @@ class DepositApi:
         deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
         return deposit
 
-    def create_fiber_deposition(self, email: str, users: List[str], country: Country, password: str = "", **kwargs) -> Deposit:
+    def create_fiber_deposition(self, email: str, users: List[str], country: Country, password: str = "", **kwargs) -> Deposit:  # pylint: disable=unused-argument
         """
         Create a Fiber diffraction deposition
         :param email: User e-mail
@@ -107,7 +109,7 @@ class DepositApi:
         deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
         return deposit
 
-    def create_neutron_deposition(self, email: str, users: List[str], country: Country, password: str = "", **kwargs) -> Deposit:
+    def create_neutron_deposition(self, email: str, users: List[str], country: Country, password: str = "", **kwargs) -> Deposit:  # pylint: disable=unused-argument
         """
         Create a Neutron diffraction deposition
         :param email: User e-mail
@@ -120,7 +122,7 @@ class DepositApi:
         deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
         return deposit
 
-    def create_ec_deposition(self, email: str, users: List[str], country: Country, password: str = "", related_emdb: str = None, **kwargs) -> Deposit:
+    def create_ec_deposition(self, email: str, users: List[str], country: Country, password: str = "", related_emdb: str = None, **kwargs) -> Deposit:  # pylint: disable=unused-argument
         """
         Create an Electron crystallography deposition
         :param email: User e-mail
@@ -134,7 +136,8 @@ class DepositApi:
         deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
         return deposit
 
-    def create_nmr_deposition(self, email: str, users: List[str], country: Country, password: str = "", related_bmrb: str = None, **kwargs) -> Deposit:
+    def create_nmr_deposition(self, email: str, users: List[str], country: Country, password: str = "",  # pylint: disable=unused-argument
+                              related_bmrb: str = None, **kwargs) -> Deposit:
         """
         Create a NMR deposition
         :param email: User e-mail
@@ -148,7 +151,8 @@ class DepositApi:
         deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
         return deposit
 
-    def create_ssnmr_deposition(self, email: str, users: List[str], country: Country, password: str = "", related_bmrb: str = None, **kwargs) -> Deposit:
+    def create_ssnmr_deposition(self, email: str, users: List[str], country: Country, password: str = "",  # pylint: disable=unused-argument
+                                related_bmrb: str = None, **kwargs) -> Deposit:
         """
         Create a Solid-state NMR E deposition
         :param email: User e-mail
@@ -252,7 +256,7 @@ class DepositApi:
         if type(file_type) == FileType:
             file_type_str = file_type.value
 
-        mime_type, encoding = mimetypes.guess_type(file_path)
+        mime_type, _encoding = mimetypes.guess_type(file_path)
         file_name = os.path.basename(file_path)
 
         data = {
@@ -322,11 +326,11 @@ class DepositApi:
         data = {}
 
         if copy_from_id:
-            copy_elements.append("contact") if copy_contact else None
-            copy_elements.append("authors") if copy_authors else None
-            copy_elements.append("citation") if copy_citation else None
-            copy_elements.append("grant") if copy_grant else None
-            copy_elements.append("em_exp") if copy_em_exp_data else None
+            copy_elements.append("contact") if copy_contact else None  # pylint: disable=expression-not-assigned
+            copy_elements.append("authors") if copy_authors else None  # pylint: disable=expression-not-assigned
+            copy_elements.append("citation") if copy_citation else None  # pylint: disable=expression-not-assigned
+            copy_elements.append("grant") if copy_grant else None  # pylint: disable=expression-not-assigned
+            copy_elements.append("em_exp") if copy_em_exp_data else None  # pylint: disable=expression-not-assigned
             data["related"] = {
                 'id': copy_from_id,
                 'items': copy_elements

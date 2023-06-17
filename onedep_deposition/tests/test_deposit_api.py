@@ -152,7 +152,7 @@ class DepositApiTests(unittest.TestCase):
 
     def test_upload_file_success(self):
         _, file_path = tempfile.mkstemp()
-        with open(file_path, "w") as fp:
+        with open(file_path, "w", encoding="utf-8") as fp:
             fp.write("test file content")
 
         expected_response = {"id": 1, "name": "test.mmcif", "type": "co-pdb", "created": "Thursday, April 21, 2023 14:30:00"}
@@ -162,7 +162,7 @@ class DepositApiTests(unittest.TestCase):
         self.assertIsInstance(result, DepositedFile, "File upload failed")
         self.assertEqual(result.id, 1, "File ID is not correct")
         self.assertEqual(result.name, "test.mmcif")
-        self.assertEqual(result._type, FileType.PDB_COORD)
+        self.assertEqual(result._type, FileType.PDB_COORD)  # pylint: disable=protected-access
 
         os.remove(file_path)
 
