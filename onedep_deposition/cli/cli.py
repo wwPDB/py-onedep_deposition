@@ -8,6 +8,7 @@ from onedep_deposition.enum import Country, FileType
 
 VERSION = "1.0.0"
 
+
 def get_api_key():
     """Get API key from the file system or environment variable"""
     if os.path.isfile(os.path.expanduser("~/onedepapi.jwt")):
@@ -20,6 +21,7 @@ def get_api_key():
                                  "file named onedepapi.jwt in your home directory with the API key.")
     return api_key
 
+
 def get_country_enum(country_string: str):
     """Get Country enum from string"""
     for country in Country:
@@ -27,12 +29,14 @@ def get_country_enum(country_string: str):
             return country
     raise click.BadParameter("Invalid country, options are: " + ", ".join([country.value for country in Country]))
 
+
 def get_file_type_enum(file_type_string: str):
     """Get FileType enum from string"""
     for file_type in FileType:
         if file_type.value == file_type_string:
             return file_type
     raise click.BadParameter("Invalid file type, options are: " + ", ".join([file_type.value for file_type in FileType]))
+
 
 def create_api(func):
     """Decorator to create the API object"""
@@ -55,9 +59,11 @@ def create_api(func):
 
     return decorator
 
+
 @click.group(name="deposition", help="Manage depositions")
 def deposition_group():
     """`deposition` command group"""
+
 
 @deposition_group.command(name="create", help="Generate the project structure and the command line interface from the CLI specification file pointed by FILENAME.")
 @click.option("-t", "--type", "dep_type", help="Experiment type [em, xray, fiber, neutron, ec, nmr, ssnmr]")
@@ -107,6 +113,7 @@ def create(api: DepositApi, ctx: Dict, dep_type: str, email: str, users: List[st
     else:
         raise click.BadParameter("Invalid experiment type, options are: em, xray, fiber, neutron, ec, nmr, ssnmr")
     click.echo(deposition)
+
 
 @deposition_group.command(name="get", help="Get deposition info")
 @click.argument("dep_id")
@@ -163,7 +170,6 @@ def process(api: DepositApi, ctx: Dict, dep_id: str, voxels_json: str, copy_dep_
     click.echo(response)
 
 
-
 @click.group(name="users", help="Manage deposition access")
 def users_group():
     """`users` command group"""
@@ -214,6 +220,7 @@ def remove(api: DepositApi, ctx: Dict, dep_id: str, orcid: str):
 def files_group():
     """`files` command group"""
 
+
 @files_group.command(name="upload", help="Upload a file to the deposition")
 @click.argument("dep_id")
 @click.option("-f", "--file_path", "file_path", help="File path to be uploaded")
@@ -234,6 +241,7 @@ def upload(api: DepositApi, ctx: Dict, dep_id: str, file_path: str, file_type: s
     file = api.upload_file(dep_id, file_path, file_type, overwrite)
     click.echo(f"Uploaded file: {file}")
 
+
 @files_group.command(name="get", help="Get files in deposition")
 @click.argument("dep_id")
 @click.pass_context
@@ -244,6 +252,7 @@ def get(api: DepositApi, ctx: Dict, dep_id: str):
     for file in files:
         click.echo(file)
         click.echo("---------------------------------")
+
 
 @files_group.command(name="remove", help="Remove a file from the deposition")
 @click.argument("dep_id")
@@ -256,6 +265,7 @@ def remove(api: DepositApi, ctx: Dict, dep_id: str, file_id: int):
     if file_removed:
         click.echo(f"File {file_id} was removed from the deposition {dep_id}.")
 
+
 @click.group()
 @click.option("-h", "--hostname", "hostname", help="Deposition hostname (Default: defined from the country)")
 @click.option("--no_ssl_verify", "no_ssl_verify", is_flag=True, help="Disable SSL verification")
@@ -265,6 +275,7 @@ def cli(ctx: dict, hostname: str, no_ssl_verify: bool):
     ctx.ensure_object(dict)
     ctx.obj["hostname"] = hostname
     ctx.obj["no_ssl_verify"] = no_ssl_verify
+
 
 @cli.command(name="version", help="Show the version and exit.")
 @click.version_option(f"{VERSION}")
