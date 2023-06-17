@@ -164,7 +164,7 @@ class DepositError:
         self._extras = value
 
     def json(self):
-        json_object =  self.__dict__.copy()
+        json_object = self.__dict__.copy()
         json_object = {key[1:]: value for key, value in json_object.items() if value is not None}
         return json_object
 
