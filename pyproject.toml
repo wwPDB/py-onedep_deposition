@@ -5,12 +5,11 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "onedep_deposition"
 authors = [
-    {name = "Neli Jose da Fonseca Junior"}
+    {name = "Neli Jose da Fonseca Junior", email="neli@ebi.ac.uk"}
 ]
 description = "Package for wrapping the OneDep deposition API services"
-readme = "README.rst"
+readme = "README.md"
 requires-python = ">=3.6"
-# keywords = ["one", "two"]
 license = {text = "apache-2.0"}
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -25,9 +24,12 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+[project.scripts]
+onedep-deposition = "onedep_deposition.cli.cli:cli"
+
 [tool.setuptools.packages.find]
 #where = ["onedep_deposition"]
-include = ["onedep_deposition"]
+include = ["onedep_deposition", "onedep_deposition.cli"]
 exclude = ["onedep_deposition.tests*"]
 
 [tool.setuptools.dynamic]
