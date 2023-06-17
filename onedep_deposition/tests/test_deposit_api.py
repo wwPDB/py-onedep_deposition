@@ -1,5 +1,6 @@
 import unittest
 import tempfile
+import logging
 import os
 from onedep_deposition.deposit_api import DepositApi
 from onedep_deposition.models import Experiment, Deposit, Depositor, DepositedFile, DepositedFilesSet, DepositStatus
@@ -8,10 +9,21 @@ from onedep_deposition.exceptions import DepositApiException
 from unittest.mock import Mock
 
 
+class MyDepositApi(DepositApi):
+    """Wrapper class to provide access to internal rest_adapter"""
+    def __init__(self, hostname: str = None, api_key: str = '', ver: str = 'v1',
+                 ssl_verify: bool = True, logger: logging.Logger = None):
+
+        super(MyDepositApi, self).__init__(hostname, api_key, ver, ssl_verify,
+                                           logger)
+
+        self.rest_adapter = self._rest_adapter
+
+
 class DepositApiTests(unittest.TestCase):
 
     def setUp(self):
-        self.deposit_api = DepositApi()
+        self.deposit_api = MyDepositApi()
         self.dep_id = "D_8233000014"
         self.email = "test@ebi.ac.uk"
         self.xray = [Experiment("xray")]
@@ -150,7 +162,7 @@ class DepositApiTests(unittest.TestCase):
         self.assertIsInstance(result, DepositedFile, "File upload failed")
         self.assertEqual(result.id, 1, "File ID is not correct")
         self.assertEqual(result.name, "test.mmcif")
-        self.assertEqual(result.type, FileType.PDB_COORD)
+        self.assertEqual(result._type, FileType.PDB_COORD)
 
         os.remove(file_path)
 
