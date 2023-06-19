@@ -85,6 +85,7 @@ class DepositApiTests(unittest.TestCase):
 
     def test_create_each_method_deposition_success(self):
         # Test successful deposition creation for each method
+        self.deposition_mocked_data["dep_id"] = self.deposition_mocked_data.pop("id")
         for method, call in self.create_deposition_methods.items():
             self.deposition_mocked_data["experiments"] = [{'type': method}]
             self.deposit_api.create_deposition = Mock(return_value=Deposit(**self.deposition_mocked_data))
@@ -133,7 +134,7 @@ class DepositApiTests(unittest.TestCase):
         self.assertEqual(len(users), 1, "Number of users is incorrect")
         for user in users:
             self.assertIsInstance(user, Depositor, "User was not added successfully")
-            self.assertEqual(user.id, self.user["id"], "Deposit ID is not correct")
+            self.assertEqual(user.user_id, self.user["user_id"], "Deposit ID is not correct")
             self.assertEqual(user.orcid, self.orcids[0], "Deposit ID is not correct")
 
     def test_add_multiple_users(self):
@@ -147,7 +148,7 @@ class DepositApiTests(unittest.TestCase):
         self.assertEqual(len(users), 2, "Number of users is incorrect")
         for i, user in enumerate(users):
             self.assertIsInstance(user, Depositor, "User was not added successfully")
-            self.assertEqual(user.id, i + 1, "Deposit ID is not correct")
+            self.assertEqual(user.user_id, i + 1, "Deposit ID is not correct")
             self.assertEqual(user.orcid, self.orcids[i], "Deposit ID is not correct")
 
     def test_upload_file_success(self):
@@ -160,7 +161,7 @@ class DepositApiTests(unittest.TestCase):
 
         result = self.deposit_api.upload_file(dep_id=self.dep_id, file_path=file_path, file_type=FileType.PDB_COORD)
         self.assertIsInstance(result, DepositedFile, "File upload failed")
-        self.assertEqual(result.id, 1, "File ID is not correct")
+        self.assertEqual(result.file_id, 1, "File ID is not correct")
         self.assertEqual(result.name, "test.mmcif")
         self.assertEqual(result._type, FileType.PDB_COORD)  # pylint: disable=protected-access
 
@@ -186,8 +187,8 @@ class DepositApiTests(unittest.TestCase):
         files = self.deposit_api.get_files(self.dep_id)
         self.assertIsInstance(files, DepositedFilesSet)
         self.assertEqual(len(files), 2)
-        self.assertEqual(files[0].id, 40)
-        self.assertEqual(files[1].id, 41)
+        self.assertEqual(files[0].file_id, 40)
+        self.assertEqual(files[1].file_id, 41)
 
     def test_get_status(self):
         self.deposit_api.rest_adapter.get = Mock(return_value=Mock(status_code=200,

@@ -42,7 +42,7 @@ class Experiment:
                  related_emdb: str = None, related_bmrb: str = None):
         """
         Constructor for Experiment
-        :param type:
+        :param exp_type:
         :param subtype:
         :param related_emdb:
         :param related_bmrb:
@@ -134,8 +134,7 @@ class DepositError:
 
 class Deposit:
     """Class representing an deposit"""
-    # TODO: Replace id for dep_id
-    def __init__(self, email: str, id: str, entry_id: str, title: str, created: str, last_login: str, site: str,  # pylint: disable=redefined-builtin
+    def __init__(self, email: str, dep_id: str, entry_id: str, title: str, created: str, last_login: str, site: str,
                  status: Status, experiments: List = None, errors: List = None, site_url: str = None):
         """
         Constructor for Deposit
@@ -152,7 +151,7 @@ class Deposit:
         :param site_url
         """
         self._email = str(email)
-        self._id = str(id)
+        self._id = str(dep_id)
         self._entry_id = str(entry_id)
         self._title = str(title)
         self._created = datetime.fromisoformat(created)
@@ -238,19 +237,18 @@ class Deposit:
 
 class Depositor:
     """Class representing a depositor"""
-    # TODO: Replace id for dep_id
-    def __init__(self, orcid: str, id: int, full_name: str, last_login: str = None, date_joined: str = None,  # pylint: disable=redefined-builtin
+    def __init__(self, orcid: str, user_id: int, full_name: str, last_login: str = None, date_joined: str = None,
                  depositions: List[Deposit] = None):
         """Constructor for depositor
         :param orcid:
-        :param id:
+        :param user_id:
         :param full_name:
         :param last_login:
         :param date_joined:
         :param depositions:
         """
         self._orcid = str(orcid)
-        self._id = int(id)
+        self._user_id = int(user_id)
         self._full_name = str(full_name)
         self._last_login = datetime.fromisoformat(last_login) if last_login else None
         self._date_joined = datetime.fromisoformat(date_joined) if date_joined else None
@@ -265,8 +263,8 @@ class Depositor:
         return self._orcid
 
     @property
-    def id(self) -> int:
-        return self._id
+    def user_id(self) -> int:
+        return self._user_id
 
     @property
     def full_name(self) -> str:
@@ -285,7 +283,7 @@ class Depositor:
         return self._depositions
 
     def __str__(self):
-        return f"Name: {self._full_name} [{self._id}]\nORCID: {self._orcid}\nDate joined: {self._date_joined}\nLast login: {self._last_login}\nDepositions: {self._depositions}"
+        return f"Name: {self._full_name} [{self._user_id}]\nORCID: {self._orcid}\nDate joined: {self._date_joined}\nLast login: {self._last_login}\nDepositions: {self._depositions}"
 
     def json(self):
         json_object = self.__dict__.copy()
@@ -300,18 +298,17 @@ class Depositor:
 
 class DepositedFile:
     """Class representing a deposited file"""
-    # TODO: Replace id for dep_id
-    def __init__(self, id: int, created: str, name: str, file_type: Union[str, FileType], errors: List[str] = None,  # pylint: disable=redefined-builtin
+    def __init__(self, file_id: int, created: str, name: str, file_type: Union[str, FileType], errors: List[str] = None,
                  warnings: List[str] = None):
         """Constructor for deposited file
-        :param id:
+        :param file_id:
         :param created:
         :param name:
         :param file_type:
         :param errors:
         :param warnings:
         """
-        self._id = int(id)
+        self._id = int(file_id)
         self._name = str(name)
 
         date_format = "%A, %B %d, %Y %H:%M:%S"
@@ -336,7 +333,7 @@ class DepositedFile:
         return message
 
     @property
-    def id(self) -> int:
+    def file_id(self) -> int:
         return self._id
 
     @property
@@ -374,6 +371,7 @@ class DepositedFilesSet:
 
         for file in files:
             file["file_type"] = file.pop("type")
+            file["file_id"] = file.pop("id")
             self._files.append(DepositedFile(**file))
 
     def __getitem__(self, index):

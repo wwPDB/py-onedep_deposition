@@ -64,6 +64,7 @@ class DepositApi:
             self._rest_adapter.hostname = self._get_site_from_country(country)
 
         response = self._rest_adapter.post("depositions/new", data=data)
+        response.data["dep_id"] = response.data.pop("id")
         deposit = Deposit(**response.data)
         return deposit
 
@@ -174,6 +175,7 @@ class DepositApi:
         """
         try:
             response = self._rest_adapter.get(f"depositions/{dep_id}")
+            response.data['dep_id'] = response.data.pop('id')
             deposit = Deposit(**response.data)
         except DepositApiException as e:
             if e.status_code == 404:
@@ -191,6 +193,7 @@ class DepositApi:
         depositions = []
         response = self._rest_adapter.get("depositions/")
         for deposition_json in response.data["items"]:
+            deposition_json['dep_id'] = deposition_json.pop('id')
             deposition = Deposit(**deposition_json)
             depositions.append(deposition)
         return depositions
@@ -204,6 +207,7 @@ class DepositApi:
         users = []
         response = self._rest_adapter.get(f"depositions/{dep_id}/users/")
         for user_json in response.data:
+            user_json["user_id"] = user_json.pop("id")
             user = Depositor(**user_json)
             users.append(user)
         return users
@@ -224,6 +228,7 @@ class DepositApi:
                 data.append({'orcid': orcid_id})
         response = self._rest_adapter.post(f"depositions/{dep_id}/users/", data=data)
         for user_json in response.data:
+            user_json["user_id"] = user_json.pop("id")
             users.append(Depositor(**user_json))
 
         return users
@@ -275,6 +280,7 @@ class DepositApi:
 
             response = self._rest_adapter.post(f"depositions/{dep_id}/files/", data=data, files=files, content_type="")
             response.data["file_type"] = response.data.pop("type")
+            response.data["file_id"] = response.data.pop("id")
 
             return DepositedFile(**response.data)
 
