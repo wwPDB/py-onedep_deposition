@@ -20,12 +20,31 @@ class RestAdapter:
         :param logger: (optional) If your app has a logger, pass it in here.
         """
         self._logger = logger or logging.getLogger(__name__)
+        self._version = ver
+        self._hostname = hostname
         self.url = "{}/api/{}/".format(hostname, ver)
         self._api_key = api_key
         self._ssl_verify = ssl_verify
         self._timeout = timeout
         if not ssl_verify:
             requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+
+    @property
+    def hostname(self) -> str:
+        """
+        Getter for hostname
+        :return: hostname
+        """
+        return self._hostname
+
+    @hostname.setter
+    def hostname(self, hostname: str) -> None:
+        """
+        Setter for hostname
+        :param hostname: hostname
+        :return: None
+        """
+        self.url = "{}/api/{}/".format(hostname, self._version)
 
     def _do(self, http_method: str, endpoint: str, params: Dict = None, data: Union[Dict, List] = None, files: Dict = None, content_type: str = "application/json") -> Response:
         """
