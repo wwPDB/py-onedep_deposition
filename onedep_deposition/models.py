@@ -436,4 +436,3 @@ class DepositStatus:
     @property
     def date(self) -> datetime:
         return self._date
-

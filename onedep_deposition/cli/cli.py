@@ -119,7 +119,7 @@ def create(api: DepositApi, ctx: Dict, dep_type: str, email: str, users: List[st
 @click.argument("dep_id")
 @click.pass_context
 @create_api
-def get(api: DepositApi, ctx: Dict, dep_id: str):
+def get_deposition(api: DepositApi, ctx: Dict, dep_id: str):
     """`get` deposition command handler"""
     deposition = api.get_deposition(dep_id)
     click.echo(deposition)
@@ -179,7 +179,7 @@ def users_group():
 @click.argument("dep_id")
 @click.pass_context
 @create_api
-def get(api: DepositApi, ctx: Dict, dep_id: str):
+def get_users(api: DepositApi, ctx: Dict, dep_id: str):
     """`get` users command handler"""
     users = api.get_users(dep_id)
     for user in users:
@@ -209,7 +209,7 @@ def add(api: DepositApi, ctx: Dict, dep_id: str, orcid: Union[List, str]):
 @click.option("-O", "--orcid", "orcid", multiple=False, help="User orcid to be removed from the deposition")
 @click.pass_context
 @create_api
-def remove(api: DepositApi, ctx: Dict, dep_id: str, orcid: str):
+def remove_user(api: DepositApi, ctx: Dict, dep_id: str, orcid: str):
     """`remove` command handler"""
     used_deleted = api.remove_user(dep_id, orcid)
     if used_deleted:
@@ -246,7 +246,7 @@ def upload(api: DepositApi, ctx: Dict, dep_id: str, file_path: str, file_type: s
 @click.argument("dep_id")
 @click.pass_context
 @create_api
-def get(api: DepositApi, ctx: Dict, dep_id: str):
+def get_files(api: DepositApi, ctx: Dict, dep_id: str):
     """`list` command handler"""
     files = api.get_files(dep_id)
     for file in files:
@@ -259,7 +259,7 @@ def get(api: DepositApi, ctx: Dict, dep_id: str):
 @click.argument("file_id")
 @click.pass_context
 @create_api
-def remove(api: DepositApi, ctx: Dict, dep_id: str, file_id: int):
+def remove_file(api: DepositApi, ctx: Dict, dep_id: str, file_id: int):
     """`remove` command handler"""
     file_removed = api.remove_file(dep_id, file_id)
     if file_removed:
