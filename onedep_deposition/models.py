@@ -53,13 +53,13 @@ class Experiment:
         self._related_bmrb = str(related_bmrb) if related_bmrb is not None else None
 
         if type(exp_type) == ExperimentType:
-            self.type = exp_type
+            self._type = exp_type
         elif exp_type:
-            self.type = ExperimentType(exp_type)
+            self._type = ExperimentType(exp_type)
         if type(subtype) == EMSubType:
-            self.subtype = subtype
+            self._subtype = subtype
         elif subtype:
-            self.subtype = EMSubType(subtype)
+            self._subtype = EMSubType(subtype)
 
     @property
     def type(self) -> Union[ExperimentType, None]:
