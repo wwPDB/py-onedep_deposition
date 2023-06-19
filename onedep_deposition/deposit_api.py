@@ -310,7 +310,10 @@ class DepositApi:
         :return: Status
         """
         response = self._rest_adapter.get(f"depositions/{dep_id}/status")
-        status = DepositStatus(**response.data)
+        try:
+            status = DepositStatus(**response.data)
+        except TypeError:
+            status = DepositError(**response.data)
         return status
 
     def process(self, dep_id: str, voxel: List = None, copy_from_id: str = None, copy_contact: bool = False,
