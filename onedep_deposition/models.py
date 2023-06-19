@@ -20,25 +20,13 @@ class Response:
     def status_code(self) -> int:
         return self._status_code
 
-    @status_code.setter
-    def status_code(self, value: int):
-        self._status_code = int(value)
-
     @property
     def message(self) -> str:
         return self._message
 
-    @message.setter
-    def message(self, value: str):
-        self._message = str(value)
-
     @property
     def data(self) -> List[Dict]:
         return self._data
-
-    @data.setter
-    def data(self, value: List[Dict]):
-        self._data = value if value else []
 
     def __str__(self):
         """
@@ -77,33 +65,17 @@ class Experiment:
     def type(self) -> Union[ExperimentType, None]:
         return self._type
 
-    @type.setter
-    def type(self, value: Union[ExperimentType, None]):
-        self._type = value
-
     @property
     def subtype(self) -> Union[EMSubType, None]:
         return self._subtype
-
-    @subtype.setter
-    def subtype(self, value: Union[EMSubType, None]):
-        self._subtype = value
 
     @property
     def related_emdb(self) -> str:
         return self._related_emdb
 
-    @related_emdb.setter
-    def related_emdb(self, value: str):
-        self._related_emdb = str(value)
-
     @property
     def related_bmrb(self) -> str:
         return self._related_bmrb
-
-    @related_bmrb.setter
-    def related_bmrb(self, value: str):
-        self._related_bmrb = str(value)
 
     def __str__(self):
         message = f"TYPE: {self._type}"
@@ -143,25 +115,13 @@ class DepositError:
     def code(self) -> str:
         return self._code
 
-    @code.setter
-    def code(self, value: str):
-        self._code = str(value)
-
     @property
     def message(self) -> str:
         return self._message
 
-    @message.setter
-    def message(self, value: str):
-        self._message = str(value)
-
     @property
     def extras(self) -> str:
         return self._extras
-
-    @extras.setter
-    def extras(self, value: str):
-        self._extras = value
 
     def json(self):
         json_object = self.__dict__.copy()
@@ -218,89 +178,45 @@ class Deposit:
     def email(self) -> str:
         return self._email
 
-    @email.setter
-    def email(self, value: str):
-        self._email = str(value)
-
     @property
     def dep_id(self) -> str:
         return self._id
-
-    @dep_id.setter
-    def dep_id(self, value: str):
-        self._id = str(value)
 
     @property
     def entry_id(self) -> str:
         return self._entry_id
 
-    @entry_id.setter
-    def entry_id(self, value: str):
-        self._entry_id = str(value)
-
     @property
     def title(self) -> str:
         return self._title
-
-    @title.setter
-    def title(self, value: str):
-        self._title = str(value)
 
     @property
     def created(self) -> datetime:
         return self._created
 
-    @created.setter
-    def created(self, value: str):
-        self._created = datetime.fromisoformat(value)
-
     @property
     def last_login(self) -> datetime:
         return self._last_login
-
-    @last_login.setter
-    def last_login(self, value: str):
-        self._last_login = datetime.fromisoformat(value)
 
     @property
     def site(self) -> str:
         return self._site
 
-    @site.setter
-    def site(self, value: str):
-        self._site = str(value)
-
     @property
     def status(self) -> Status:
         return self._status
-
-    @status.setter
-    def status(self, value: Status):
-        self._status = value
 
     @property
     def experiments(self) -> List[Experiment]:
         return self._experiments
 
-    @experiments.setter
-    def experiments(self, value: List[Experiment]):
-        self._experiments = value if value else []
-
     @property
     def errors(self) -> List[DepositError]:
         return self._errors
 
-    @errors.setter
-    def errors(self, value: List[DepositError]):
-        self._errors = value if value else []
-
     @property
     def site_url(self) -> str:
         return self._site_url
-
-    @site_url.setter
-    def site_url(self, value: str):
-        self._site_url = str(value)
 
     def __str__(self):
         experiments_text = [str(exp) for exp in self._experiments]
@@ -348,49 +264,25 @@ class Depositor:
     def orcid(self) -> str:
         return self._orcid
 
-    @orcid.setter
-    def orcid(self, value: str):
-        self._orcid = str(value)
-
     @property
     def id(self) -> int:
         return self._id
-
-    @id.setter
-    def id(self, value: int):
-        self._id = int(value)
 
     @property
     def full_name(self) -> str:
         return self._full_name
 
-    @full_name.setter
-    def full_name(self, value: str):
-        self._full_name = str(value)
-
     @property
     def last_login(self) -> datetime:
         return self._last_login
-
-    @last_login.setter
-    def last_login(self, value: str):
-        self._last_login = datetime.fromisoformat(value) if value else None
 
     @property
     def date_joined(self) -> datetime:
         return self._date_joined
 
-    @date_joined.setter
-    def date_joined(self, value: str):
-        self._date_joined = datetime.fromisoformat(value) if value else None
-
     @property
     def depositions(self) -> List[Deposit]:
         return self._depositions
-
-    @depositions.setter
-    def depositions(self, value: List[Deposit]):
-        self._depositions = value if value else []
 
     def __str__(self):
         return f"Name: {self._full_name} [{self._id}]\nORCID: {self._orcid}\nDate joined: {self._date_joined}\nLast login: {self._last_login}\nDepositions: {self._depositions}"
@@ -447,53 +339,25 @@ class DepositedFile:
     def id(self) -> int:
         return self._id
 
-    @id.setter
-    def id(self, value: int):
-        self._id = int(value)
-
     @property
     def created(self) -> datetime:
         return self._created
-
-    @created.setter
-    def created(self, value: str):
-        date_format = "%A, %B %d, %Y %H:%M:%S"
-        self._created = datetime.strptime(value, date_format)
 
     @property
     def name(self) -> str:
         return self._name
 
-    @name.setter
-    def name(self, value: str):
-        self._name = str(value)
-
     @property
     def file_type(self) -> FileType:
         return self._type
-
-    @file_type.setter
-    def file_type(self, value: Union[str, FileType]):
-        if isinstance(value, str):
-            self._type = FileType(value)
-        else:
-            self._type = value
 
     @property
     def errors(self) -> List[str]:
         return self._errors
 
-    @errors.setter
-    def errors(self, value: List[str]):
-        self._errors = [DepositError(**error) for error in value if error != ""] if value else []
-
     @property
     def warnings(self) -> List[str]:
         return self._warnings
-
-    @warnings.setter
-    def warnings(self, value: List[str]):
-        self._warnings = [warning for warning in value if warning != ""] if value else []
 
 
 class DepositedFilesSet:
@@ -533,25 +397,13 @@ class DepositedFilesSet:
     def files(self) -> List[DepositedFile]:
         return self._files
 
-    @files.setter
-    def files(self, value: List[DepositedFile]):
-        self._files = value if value else []
-
     @property
     def errors(self) -> List[str]:
         return self._errors
 
-    @errors.setter
-    def errors(self, value: List[str]):
-        self._errors = [DepositError(**error) for error in value if error != ""] if value else []
-
     @property
     def warnings(self) -> List[str]:
         return self._warnings
-
-    @warnings.setter
-    def warnings(self, value: List[str]):
-        self._warnings = [warning for warning in value if warning != ""] if value else []
 
 
 class DepositStatus:
@@ -569,38 +421,19 @@ class DepositStatus:
     def status(self) -> str:
         return self._status
 
-    @status.setter
-    def status(self, value: str):
-        self._status = str(value)
-
     @property
     def action(self) -> str:
         return self._action
-
-    @action.setter
-    def action(self, value: str):
-        self._action = str(value)
 
     @property
     def step(self) -> str:
         return self._step
 
-    @step.setter
-    def step(self, value: str):
-        self._step = str(value)
-
     @property
     def details(self) -> str:
         return self._details
-
-    @details.setter
-    def details(self, value: str):
-        self._details = str(value)
 
     @property
     def date(self) -> datetime:
         return self._date
 
-    @date.setter
-    def date(self, value: str):
-        self._date = datetime.fromisoformat(value)
