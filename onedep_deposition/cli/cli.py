@@ -88,6 +88,10 @@ def create(api: DepositApi, ctx: Dict, dep_type: str, email: str, users: List[st
         raise click.BadParameter("Invalid email")
     if len(users) == 0:
         raise click.BadParameter("At least one user is required")
+    else:
+        for orcid in users:
+            if not re.match(r'^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$', orcid):
+                raise click.BadParameter(f"Invalid ORCID: {orcid}")
     if related_bmrb:
         if not re.match(r'^\d+$', related_bmrb):
             raise click.BadParameter("Invalid BMRB code")
