@@ -79,18 +79,18 @@ class RestAdapter:
         if response.status_code == 204:
             # Django is redirecting 204 to OneDep home page
             return Response(204)
+        is_success = 299 >= response.status_code >= 200
+        log_line = log_line_post.format(is_success, response.status_code, response.reason)
+        if not is_success:
+            self._logger.error(msg=log_line)
+            raise DepositApiException(response.reason, response.status_code)
         try:
             data_out = response.json()
         except (ValueError, JSONDecodeError) as e:
             self._logger.error(msg=log_line_post.format(False, None, e))
             raise DepositApiException("Bad JSON in response", 502) from e
-        is_success = 299 >= response.status_code >= 200
-        log_line = log_line_post.format(is_success, response.status_code, response.reason)
-        if is_success:
-            self._logger.debug(msg=log_line)
-            return Response(response.status_code, response.reason, data_out)
-        self._logger.error(msg=log_line)
-        raise DepositApiException(response.reason, response.status_code)
+        self._logger.debug(msg=log_line)
+        return Response(response.status_code, response.reason, data_out)
 
     def get(self, endpoint: str, params: Dict = None, content_type: str = "application/json") -> Response:
         """
