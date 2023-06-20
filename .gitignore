@@ -109,3 +109,6 @@ venv.bak/
 
 # emacs autosave file
 *~
+
+# cli symbolic link
+run_cli.py
