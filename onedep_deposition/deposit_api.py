@@ -41,8 +41,8 @@ class DepositApi:
         self._rest_adapter = RestAdapter(self._hostname, self._api_key, self._version, self._ssl_verify, self._logger)
 
     @handle_invalid_deposit_site
-    def create_deposition(self, email: str, users: List[str], country: Country,
-                          experiments: List[Experiment], password: str = "") -> Deposit:
+    def create_deposition(self, email: str, users: List[str], country: Country, # pylint: disable=unused-argument
+                          experiments: List[Experiment], password: str = "", **kwargs) -> Deposit:
         """
         General method to create a deposition passing an Experiment object
         :param email: User e-mail

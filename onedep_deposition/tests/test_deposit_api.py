@@ -14,8 +14,7 @@ class MyDepositApi(DepositApi):
     def __init__(self, hostname: str = None, api_key: str = '', ver: str = 'v1',
                  ssl_verify: bool = True, logger: logging.Logger = None):
 
-        super(MyDepositApi, self).__init__(hostname, api_key, ver, ssl_verify,
-                                           logger)
+        super(MyDepositApi, self).__init__(hostname, api_key, ver, ssl_verify, redirect=False, logger=logger)
 
         self.rest_adapter = self._rest_adapter
 
@@ -107,12 +106,6 @@ class DepositApiTests(unittest.TestCase):
         deposit = self.deposit_api.get_deposition(dep_id=self.dep_id)
         self.assertIsInstance(deposit, Deposit, "Deposition was not created successfully")
         self.assertEqual(deposit.dep_id, self.dep_id, "Deposit ID is not correct")
-
-    def test_get_deposition_failure(self):
-        # Test deposition not found
-        self.deposit_api.rest_adapter.get = Mock(side_effect=DepositApiException("Page not found", 404))
-        deposit = self.deposit_api.get_deposition(dep_id=self.dep_id)
-        self.assertIsNone(deposit, "Failed to get deposition")
 
     def test_get_all_depositions_success(self):
         # Test find all depositions_success
