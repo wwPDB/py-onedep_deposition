@@ -43,6 +43,7 @@ def create_api(func):
     def decorator(ctx, *args, **kwargs):
         hostname = ctx.obj["hostname"]
         no_ssl_verify = ctx.obj["no_ssl_verify"]
+        no_redirect = ctx.obj["no_redirect"]
 
         api_args = {
             "api_key": get_api_key()
@@ -53,6 +54,10 @@ def create_api(func):
             api_args["ssl_verify"] = False
         else:
             api_args["ssl_verify"] = True
+        if no_redirect:
+            api_args["redirect"] = False
+        else:
+            api_args["redirect"] = True
         api = DepositApi(**api_args)
 
         return func(api, ctx, *args, **kwargs)
@@ -273,12 +278,14 @@ def remove_file(api: DepositApi, ctx: Dict, dep_id: str, file_id: int):
 @click.group()
 @click.option("-h", "--hostname", "hostname", help="Deposition hostname (Default: defined from the country)")
 @click.option("--no_ssl_verify", "no_ssl_verify", is_flag=True, help="Disable SSL verification")
+@click.option("--no_redirect", "no_redirect", is_flag=True, help="Disable site redirection (Default: enabled)")
 @click.pass_context
-def cli(ctx: dict, hostname: str, no_ssl_verify: bool):
+def cli(ctx: dict, hostname: str, no_ssl_verify: bool, no_redirect: bool):
     """CLI entry point"""
     ctx.ensure_object(dict)
     ctx.obj["hostname"] = hostname
     ctx.obj["no_ssl_verify"] = no_ssl_verify
+    ctx.obj["no_redirect"] = no_redirect
 
 
 @cli.command(name="version", help="Show the version and exit.")

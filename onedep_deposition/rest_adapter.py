@@ -3,7 +3,7 @@ import requests.packages
 import logging
 from typing import Dict, Union, List
 from json import JSONDecodeError
-from onedep_deposition.exceptions import DepositApiException
+from onedep_deposition.exceptions import DepositApiException, InvalidDepositSiteException
 from onedep_deposition.models import Response
 
 
@@ -90,6 +90,11 @@ class RestAdapter:
             self._logger.error(msg=log_line_post.format(False, None, e))
             raise DepositApiException("Bad JSON in response", 502) from e
         self._logger.debug(msg=log_line)
+
+        if 'extras' in data_out and 'code' in data_out:
+            if 'invalid_location' in data_out['code'] and 'base_url' in data_out['extras']:
+                self._logger.warning(msg=f"Invalid deposit site, expected is {data_out['extras']['base_url']}")
+                raise InvalidDepositSiteException(data_out['extras']['base_url'])
         return Response(response.status_code, response.reason, data_out)
 
     def get(self, endpoint: str, params: Dict = None, content_type: str = "application/json") -> Response:
