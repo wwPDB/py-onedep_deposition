@@ -5,8 +5,7 @@ import json
 from typing import List, Union, Dict
 from onedep_deposition.deposit_api import DepositApi
 from onedep_deposition.enum import Country, FileType
-
-VERSION = "1.0.0"
+from onedep_deposition.__init__ import __version__ as VERSION
 
 
 def get_api_key():
