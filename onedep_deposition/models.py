@@ -38,15 +38,17 @@ class Response:
 
 class Experiment:
     """Class representing an experiment"""
-    def __init__(self, exp_type: Union[ExperimentType, str], subtype: Union[EMSubType, str] = None,
+    def __init__(self, exp_type: Union[ExperimentType, str], coordinates: bool = True, subtype: Union[EMSubType, str] = None,
                  related_emdb: str = None, related_bmrb: str = None):
         """
         Constructor for Experiment
         :param exp_type:
+        :param coordinates:
         :param subtype:
         :param related_emdb:
         :param related_bmrb:
         """
+        self._coordinates = bool(coordinates)
         self._type = None
         self._subtype = None
         self._related_emdb = str(related_emdb) if related_emdb is not None else None
@@ -60,6 +62,10 @@ class Experiment:
             self._subtype = subtype
         elif subtype:
             self._subtype = EMSubType(subtype)
+
+    @property
+    def coordinates(self) -> bool:
+        return self._coordinates
 
     @property
     def type(self) -> Union[ExperimentType, None]:

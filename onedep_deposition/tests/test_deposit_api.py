@@ -25,7 +25,7 @@ class DepositApiTests(unittest.TestCase):
         self.deposit_api = MyDepositApi()
         self.dep_id = "D_8233000014"
         self.email = "test@ebi.ac.uk"
-        self.xray = [Experiment("xray")]
+        self.xray = [Experiment("xray", coordinates=True)]
         self.orcids = ["0009-0005-7979-7466", "0000-0001-6466-8083"]
         self.deposition_mocked_data = {
             "id": self.dep_id,

@@ -73,18 +73,19 @@ class DepositApi:
         return deposit
 
     def create_em_deposition(self, email: str, users: List[str], country: Country, subtype: Union[EMSubType, str],  # pylint: disable=unused-argument
-                             related_emdb: str = None, password: str = "", **kwargs) -> Deposit:
+                             coordinates: bool ,related_emdb: str = None, password: str = "", **kwargs) -> Deposit:
         """
         Create an EM deposition
         :param email: User e-mail
         :param users: List of ORCID ids that can access this deposition
         :param country: Country from enum list
         :param subtype: EM sub type, accepts enum or string
+        :param coordinates: Depositing coordinates file?
         :param related_emdb: Related EMDB id
         :param password: Password
         :return: Response
         """
-        experiment = Experiment(exp_type="em", subtype=subtype, related_emdb=related_emdb)
+        experiment = Experiment(exp_type="em", coordinates=coordinates, subtype=subtype, related_emdb=related_emdb)
         deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
         return deposit
 
@@ -97,7 +98,7 @@ class DepositApi:
         :param password: Password
         :return: Response
         """
-        experiment = Experiment(exp_type="xray")
+        experiment = Experiment(exp_type="xray", coordinates=True)
         deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
         return deposit
 
@@ -110,7 +111,7 @@ class DepositApi:
         :param password: Password
         :return: Response
         """
-        experiment = Experiment(exp_type="fiber")
+        experiment = Experiment(exp_type="fiber", coordinates=True)
         deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
         return deposit
 
@@ -123,51 +124,54 @@ class DepositApi:
         :param password: Password
         :return: Response
         """
-        experiment = Experiment(exp_type="neutron")
+        experiment = Experiment(exp_type="neutron", coordinates=True)
         deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
         return deposit
 
-    def create_ec_deposition(self, email: str, users: List[str], country: Country, password: str = "", related_emdb: str = None, **kwargs) -> Deposit:  # pylint: disable=unused-argument
+    def create_ec_deposition(self, email: str, users: List[str], country: Country, coordinates: bool, password: str = "", related_emdb: str = None, **kwargs) -> Deposit:  # pylint: disable=unused-argument
         """
         Create an Electron crystallography deposition
         :param email: User e-mail
         :param users: List of ORCID ids that can access this deposition
         :param country: Country from enum list
+        :param coordinates: Depositing coordinates file?
         :param password: Password
         :param related_emdb: Related EMDB id
         :return: Response
         """
-        experiment = Experiment(exp_type="ec", related_emdb=related_emdb)
+        experiment = Experiment(exp_type="ec", related_emdb=related_emdb, coordinates=coordinates)
         deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
         return deposit
 
-    def create_nmr_deposition(self, email: str, users: List[str], country: Country, password: str = "",  # pylint: disable=unused-argument
+    def create_nmr_deposition(self, email: str, users: List[str], country: Country, coordinates: bool, password: str = "",  # pylint: disable=unused-argument
                               related_bmrb: str = None, **kwargs) -> Deposit:
         """
         Create a NMR deposition
         :param email: User e-mail
         :param users: List of ORCID ids that can access this deposition
         :param country: Country from enum list
+        :param coordinates: Depositing coordinates file?
         :param password: Password
         :param related_bmrb: Related BMRB id
         :return: Response
         """
-        experiment = Experiment(exp_type="nmr", related_bmrb=related_bmrb)
+        experiment = Experiment(exp_type="nmr", related_bmrb=related_bmrb, coordinates=coordinates)
         deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
         return deposit
 
-    def create_ssnmr_deposition(self, email: str, users: List[str], country: Country, password: str = "",  # pylint: disable=unused-argument
+    def create_ssnmr_deposition(self, email: str, users: List[str], country: Country, coordinates: bool, password: str = "",  # pylint: disable=unused-argument
                                 related_bmrb: str = None, **kwargs) -> Deposit:
         """
         Create a Solid-state NMR E deposition
         :param email: User e-mail
         :param users: List of ORCID ids that can access this deposition
         :param country: Country from enum list
+        :param coordinates: Depositing coordinates file?
         :param password: Password
         :param related_bmrb: Related BMRB id
         :return: Response
         """
-        experiment = Experiment(exp_type="ssnmr", related_bmrb=related_bmrb)
+        experiment = Experiment(exp_type="ssnmr", related_bmrb=related_bmrb, coordinates=coordinates)
         deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
         return deposit
 
