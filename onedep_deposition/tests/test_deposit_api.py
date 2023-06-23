@@ -47,7 +47,8 @@ class DepositApiTests(unittest.TestCase):
             'password': "password",
             'subtype': EMSubType.SPA,
             'related_emdb': "EMD-1234",
-            'related_bmrb': "51899"
+            'related_bmrb': "51899",
+            'coordinates': True,
         }
         self.create_deposition_methods = {
             'xray': self.deposit_api.create_xray_deposition,
@@ -86,7 +87,9 @@ class DepositApiTests(unittest.TestCase):
         # Test successful deposition creation for each method
         self.deposition_mocked_data["dep_id"] = self.deposition_mocked_data.pop("id")
         for method, call in self.create_deposition_methods.items():
-            self.deposition_mocked_data["experiments"] = [{'type': method}]
+            if method not in ["xray", "fiber", "neutron"]:
+                self.deposition_mocked_data["experiments"] = [{'type': method, 'coordinates': False}]
+                self.create_deposition_params["coordinates"] = False
             self.deposit_api.create_deposition = Mock(return_value=Deposit(**self.deposition_mocked_data))
             deposit = call(**self.create_deposition_params)
             self.assertIsInstance(deposit, Deposit, f"{method} deposition was not created successfully")

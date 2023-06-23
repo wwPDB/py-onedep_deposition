@@ -73,7 +73,7 @@ class DepositApi:
         return deposit
 
     def create_em_deposition(self, email: str, users: List[str], country: Country, subtype: Union[EMSubType, str],  # pylint: disable=unused-argument
-                             coordinates: bool ,related_emdb: str = None, password: str = "", **kwargs) -> Deposit:
+                             coordinates: bool, related_emdb: str = None, password: str = "", **kwargs) -> Deposit:
         """
         Create an EM deposition
         :param email: User e-mail
