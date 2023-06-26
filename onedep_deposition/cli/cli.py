@@ -118,11 +118,11 @@ def create(api: DepositApi, ctx: Dict, dep_type: str, email: str, users: List[st
     elif dep_type == "neutron":
         deposition = api.create_neutron_deposition(email, users, country, password)
     elif dep_type == "ec":
-        deposition = api.create_ec_deposition(email, users, country, coordinates, related_emdb, password)
+        deposition = api.create_ec_deposition(email, users, country, coordinates, password, related_emdb)
     elif dep_type == "nmr":
-        deposition = api.create_nmr_deposition(email, users, country, coordinates, related_bmrb, password)
+        deposition = api.create_nmr_deposition(email, users, country, coordinates, password, related_bmrb)
     elif dep_type == "ssnmr":
-        deposition = api.create_ssnmr_deposition(email, users, country, coordinates, related_bmrb, password)
+        deposition = api.create_ssnmr_deposition(email, users, country, coordinates, password, related_bmrb)
     else:
         raise click.BadParameter("Invalid experiment type, options are: em, xray, fiber, neutron, ec, nmr, ssnmr")
     click.echo(deposition)
