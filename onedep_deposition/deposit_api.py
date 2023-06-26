@@ -128,7 +128,8 @@ class DepositApi:
         deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
         return deposit
 
-    def create_ec_deposition(self, email: str, users: List[str], country: Country, coordinates: bool, password: str = "", related_emdb: str = None, **kwargs) -> Deposit:  # pylint: disable=unused-argument
+    def create_ec_deposition(self, email: str, users: List[str], country: Country, coordinates: bool, password: str = "",
+                             related_emdb: str = None, sf_only: bool = False, **kwargs) -> Deposit:  # pylint: disable=unused-argument
         """
         Create an Electron crystallography deposition
         :param email: User e-mail
@@ -137,9 +138,10 @@ class DepositApi:
         :param coordinates: Depositing coordinates file?
         :param password: Password
         :param related_emdb: Related EMDB id
+        :param sf_only: Structure factor only?
         :return: Response
         """
-        experiment = Experiment(exp_type="ec", related_emdb=related_emdb, coordinates=coordinates)
+        experiment = Experiment(exp_type="ec", related_emdb=related_emdb, coordinates=coordinates, sf_only=sf_only)
         deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
         return deposit
 

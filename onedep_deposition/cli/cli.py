@@ -2,6 +2,7 @@ import click
 import re
 import os
 import json
+import logging
 from typing import List, Union, Dict
 from onedep_deposition.deposit_api import DepositApi
 from onedep_deposition.enum import Country, FileType
@@ -77,12 +78,13 @@ def deposition_group():
 @click.option("-s", "--subtype", "subtype", help="Experiment subtype, only valid if type is EM")
 @click.option("-E", "--related_emdb", "related_emdb", help="Related EMDB code. Only valid for EM and EC")
 @click.option("-B", "--related_bmrb", "related_bmrb", help="Related BMRB code. Only valid for NMR")
-@click.option("--no_coordinates", "no_coordinates", is_flag=True, help="Depositing coordinates file? (y/n)")
+@click.option("--no_coordinates", "no_coordinates", is_flag=True, help="Not including coordinates file")
+@click.option("--no_map", "no_map", is_flag=True, help="Not including map file (only for EC)")
 @click.option("-p", "--password", "password", help="Deposition password")
 @click.pass_context
 @create_api
 def create(api: DepositApi, ctx: Dict, dep_type: str, email: str, users: List[str], country_string: str, subtype: str,
-           related_emdb: str, related_bmrb: str, password: str, no_coordinates: bool = False):
+           related_emdb: str, related_bmrb: str, password: str, no_coordinates: bool = False, no_map: bool = False):
     """`create` deposition command handler"""
     if subtype:
         if subtype not in ["helical", "single", "subtomogram", "tomography"]:
@@ -106,6 +108,8 @@ def create(api: DepositApi, ctx: Dict, dep_type: str, email: str, users: List[st
     if no_coordinates:
         if dep_type in ["xray", "fiber", "neutron"]:
             raise click.BadParameter("Coordinates are mandatory for X-ray, fiber and neutron diffraction")
+    if dep_type != "ec" and no_map:
+        logging.warning("--no_map flag is only used in EC depositions.")
     country = get_country_enum(country_string)
     coordinates = not no_coordinates
 
@@ -118,7 +122,7 @@ def create(api: DepositApi, ctx: Dict, dep_type: str, email: str, users: List[st
     elif dep_type == "neutron":
         deposition = api.create_neutron_deposition(email, users, country, password)
     elif dep_type == "ec":
-        deposition = api.create_ec_deposition(email, users, country, coordinates, password, related_emdb)
+        deposition = api.create_ec_deposition(email, users, country, coordinates, password, related_emdb, no_map)
     elif dep_type == "nmr":
         deposition = api.create_nmr_deposition(email, users, country, coordinates, password, related_bmrb)
     elif dep_type == "ssnmr":
