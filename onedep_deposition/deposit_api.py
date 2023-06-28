@@ -4,7 +4,7 @@ from onedep_deposition.models import DepositStatus, Experiment, Deposit, Deposit
 from onedep_deposition.enum import Country, EMSubType, FileType
 from onedep_deposition.exceptions import DepositApiException, InvalidDepositSiteException
 from onedep_deposition.decorators import handle_invalid_deposit_site
-from typing import List, Union
+from typing import List, Union, Dict
 import mimetypes
 import os
 
@@ -328,7 +328,7 @@ class DepositApi:
         return status
 
     @handle_invalid_deposit_site
-    def process(self, dep_id: str, voxel: List = None, copy_from_id: str = None, copy_contact: bool = False,
+    def process(self, dep_id: str, voxel: Dict = None, copy_from_id: str = None, copy_contact: bool = False,
                 copy_authors: bool = False, copy_citation: bool = False, copy_grant: bool = False,
                 copy_em_exp_data: bool = False):
         """
@@ -345,6 +345,8 @@ class DepositApi:
         """
         copy_elements = []
         data = {}
+        if voxel:
+            data = voxel
 
         if copy_from_id:
             copy_elements.append("contact") if copy_contact else None  # pylint: disable=expression-not-assigned
@@ -356,9 +358,6 @@ class DepositApi:
                 'id': copy_from_id,
                 'items': copy_elements
             }
-
-        if voxel:
-            data['parameters']['voxel'] = voxel
 
         response = self._rest_adapter.post(f"depositions/{dep_id}/process", data=data)
         try:
