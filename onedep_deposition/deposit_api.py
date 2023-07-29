@@ -41,7 +41,7 @@ class DepositApi:
         self._rest_adapter = RestAdapter(self._hostname, self._api_key, self._version, self._ssl_verify, self._logger)
 
     @handle_invalid_deposit_site
-    def create_deposition(self, email: str, users: List[str], country: Country, # pylint: disable=unused-argument
+    def create_deposition(self, email: str, users: List[str], country: Country,  # pylint: disable=unused-argument
                           experiments: List[Experiment], password: str = "", **kwargs) -> Deposit:
         """
         General method to create a deposition passing an Experiment object
@@ -128,8 +128,8 @@ class DepositApi:
         deposit = self.create_deposition(email=email, users=users, country=country, experiments=[experiment], password=password)
         return deposit
 
-    def create_ec_deposition(self, email: str, users: List[str], country: Country, coordinates: bool, password: str = "",
-                             related_emdb: str = None, sf_only: bool = False, **kwargs) -> Deposit:  # pylint: disable=unused-argument
+    def create_ec_deposition(self, email: str, users: List[str], country: Country, coordinates: bool, password: str = "",  # pylint: disable=unused-argument
+                             related_emdb: str = None, sf_only: bool = False, **kwargs) -> Deposit:
         """
         Create an Electron crystallography deposition
         :param email: User e-mail

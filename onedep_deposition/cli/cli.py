@@ -12,7 +12,7 @@ from onedep_deposition.__init__ import __version__ as VERSION
 def get_api_key():
     """Get API key from the file system or environment variable"""
     if os.path.isfile(os.path.expanduser("~/onedepapi.jwt")):
-        with open(os.path.expanduser("~/onedepapi.jwt"), "r") as f:
+        with open(os.path.expanduser("~/onedepapi.jwt"), "r", encoding="utf-8") as f:
             api_key = f.read().strip()
     else:
         api_key = os.environ.get("ONEDEP_API_KEY")
@@ -83,7 +83,7 @@ def deposition_group():
 @click.option("-p", "--password", "password", help="Deposition password")
 @click.pass_context
 @create_api
-def create(api: DepositApi, ctx: Dict, dep_type: str, email: str, users: List[str], country_string: str, subtype: str,
+def create(api: DepositApi, ctx: Dict, dep_type: str, email: str, users: List[str], country_string: str, subtype: str,  # pylint: disable=unused-argument
            related_emdb: str, related_bmrb: str, password: str, no_coordinates: bool = False, no_map: bool = False):
     """`create` deposition command handler"""
     if subtype:
@@ -136,7 +136,7 @@ def create(api: DepositApi, ctx: Dict, dep_type: str, email: str, users: List[st
 @click.argument("dep_id")
 @click.pass_context
 @create_api
-def get_deposition(api: DepositApi, ctx: Dict, dep_id: str):
+def get_deposition(api: DepositApi, ctx: Dict, dep_id: str):  # pylint: disable=unused-argument
     """`get` deposition command handler"""
     deposition = api.get_deposition(dep_id)
     click.echo(deposition)
@@ -146,7 +146,7 @@ def get_deposition(api: DepositApi, ctx: Dict, dep_id: str):
 @click.argument("dep_id")
 @click.pass_context
 @create_api
-def status(api: DepositApi, ctx: Dict, dep_id: str):
+def status(api: DepositApi, ctx: Dict, dep_id: str):  # pylint: disable=unused-argument
     """`status` command handler"""
     response = api.get_status(dep_id)
     click.echo(response)
@@ -164,7 +164,7 @@ def status(api: DepositApi, ctx: Dict, dep_id: str):
 @click.option("--copy-em-exp", "copy_em_exp", is_flag=True, help="Copy EM experiment metadata from a previous deposition")
 @click.pass_context
 @create_api
-def process(api: DepositApi, ctx: Dict, dep_id: str, voxels_json: str, copy_dep_id: str, copy_all: bool = False,
+def process(api: DepositApi, ctx: Dict, dep_id: str, voxels_json: str, copy_dep_id: str, copy_all: bool = False,  # pylint: disable=unused-argument
             copy_contact: bool = False, copy_authors: bool = False, copy_citation: bool = False,
             copy_grant: bool = False, copy_em_exp: bool = False):
     """`process` command handler"""
@@ -178,7 +178,7 @@ def process(api: DepositApi, ctx: Dict, dep_id: str, voxels_json: str, copy_dep_
     if voxels_json:
         if not os.path.isfile(voxels_json):
             raise click.BadParameter("Voxel file not found")
-        with open(voxels_json) as f:
+        with open(voxels_json, "r", encoding="utf-8") as f:
             voxel = json.load(f)
     else:
         voxel = None
@@ -196,7 +196,7 @@ def users_group():
 @click.argument("dep_id")
 @click.pass_context
 @create_api
-def get_users(api: DepositApi, ctx: Dict, dep_id: str):
+def get_users(api: DepositApi, ctx: Dict, dep_id: str):  # pylint: disable=unused-argument
     """`get` users command handler"""
     users = api.get_users(dep_id)
     for user in users:
@@ -209,7 +209,7 @@ def get_users(api: DepositApi, ctx: Dict, dep_id: str):
 @click.option("-O", "--orcid", "orcid", multiple=True, help="User orcid to be removed from the deposition")
 @click.pass_context
 @create_api
-def add(api: DepositApi, ctx: Dict, dep_id: str, orcid: Union[List, str]):
+def add(api: DepositApi, ctx: Dict, dep_id: str, orcid: Union[List, str]):  # pylint: disable=unused-argument
     """`add` users command handler"""
     if len(orcid) == 1:
         orcid = orcid[0]
@@ -226,7 +226,7 @@ def add(api: DepositApi, ctx: Dict, dep_id: str, orcid: Union[List, str]):
 @click.option("-O", "--orcid", "orcid", multiple=False, help="User orcid to be removed from the deposition")
 @click.pass_context
 @create_api
-def remove_user(api: DepositApi, ctx: Dict, dep_id: str, orcid: str):
+def remove_user(api: DepositApi, ctx: Dict, dep_id: str, orcid: str):  # pylint: disable=unused-argument
     """`remove` command handler"""
     used_deleted = api.remove_user(dep_id, orcid)
     if used_deleted:
@@ -245,7 +245,7 @@ def files_group():
 @click.option("--overwrite", "overwrite", is_flag=True, help="Overwrite destination file if file with same name is present")
 @click.pass_context
 @create_api
-def upload(api: DepositApi, ctx: Dict, dep_id: str, file_path: str, file_type: str, overwrite: bool = False):
+def upload(api: DepositApi, ctx: Dict, dep_id: str, file_path: str, file_type: str, overwrite: bool = False):  # pylint: disable=unused-argument
     """`upload` command handler"""
     if not file_path:
         raise click.BadParameter("File path is required")
@@ -263,7 +263,7 @@ def upload(api: DepositApi, ctx: Dict, dep_id: str, file_path: str, file_type: s
 @click.argument("dep_id")
 @click.pass_context
 @create_api
-def get_files(api: DepositApi, ctx: Dict, dep_id: str):
+def get_files(api: DepositApi, ctx: Dict, dep_id: str):  # pylint: disable=unused-argument
     """`list` command handler"""
     files = api.get_files(dep_id)
     for file in files:
@@ -276,7 +276,7 @@ def get_files(api: DepositApi, ctx: Dict, dep_id: str):
 @click.argument("file_id")
 @click.pass_context
 @create_api
-def remove_file(api: DepositApi, ctx: Dict, dep_id: str, file_id: int):
+def remove_file(api: DepositApi, ctx: Dict, dep_id: str, file_id: int):  # pylint: disable=unused-argument
     """`remove` command handler"""
     file_removed = api.remove_file(dep_id, file_id)
     if file_removed:
@@ -309,4 +309,4 @@ cli.add_command(files_group)
 
 
 if __name__ == "__main__":
-    cli(obj={})
+    cli(obj={})  # pylint: disable=no-value-for-parameter

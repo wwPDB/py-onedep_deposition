@@ -3,7 +3,8 @@ class DepositApiException(Exception):
         super().__init__(message)
         self.status_code = status_code
 
+
 class InvalidDepositSiteException(Exception):
     def __init__(self, site: str):
-        super().__init__(f"Invalid deposit site")
+        super().__init__("Invalid deposit site")
         self.site = site

@@ -90,7 +90,7 @@ class DepositApiTests(unittest.TestCase):
             if method not in ["xray", "fiber", "neutron"]:
                 self.deposition_mocked_data["experiments"] = [{'type': method, 'coordinates': False}]
                 self.create_deposition_params["coordinates"] = False
-            self.deposit_api.create_deposition = Mock(return_value=Deposit(**self.deposition_mocked_data))
+            self.deposit_api.create_deposition = Mock(return_value=Deposit(**self.deposition_mocked_data))  # pylint: disable=unexpected-keyword-arg
             deposit = call(**self.create_deposition_params)
             self.assertIsInstance(deposit, Deposit, f"{method} deposition was not created successfully")
             self.assertEqual(deposit.dep_id, self.dep_id, "Deposit ID is not correct")
