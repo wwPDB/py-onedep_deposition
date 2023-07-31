@@ -1,0 +1,86 @@
+site_name: OneDep Deposition API Documentation
+
+#watch:
+#  - modules/py-wwpdb_utils_config
+  
+theme:
+  name: "material"
+  palette:
+    accent: grey
+    primary: blue grey
+    scheme: default
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - navigation.tabs
+    - navigation.expand
+    - navigation.footer
+  icon:
+    repo: fontawesome/brands/github
+
+
+markdown_extensions:
+#  - markdown_include.include
+  - pymdownx.magiclink
+  - admonition # alerts
+  - pymdownx.details #  collapsible alerts
+  - pymdownx.superfences # nest code and content inside alerts
+  - attr_list # add HTML and CSS to Markdown elements
+  - pymdownx.keys # show keystroke symbols
+  - pymdownx.snippets # insert content from other files
+  - pymdownx.tabbed # content tabs
+#  - footnotes
+  - def_list
+#  - pymdownx.arithmatex: # mathjax
+#      generic: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+      clickable_checkbox: true
+  - codehilite
+  - pymdownx.inlinehilite # inline code highlights
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+      use_pygments: true
+  - toc:
+      toc_depth: 2
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          # paths: [modules/py-wwpdb_utils_config]
+          options:
+            #show_source: false
+            group_by_category: true
+            show_category_heading: true
+            show_if_no_docstring: true
+            show_root_heading: true
+            show_bases: false
+            # show_category_heading: false
+            filters:
+              - "!^__[a-z]*"  # __author__ and class local
+              - "!^_[^_]"
+              - "^__init__"
+              
+
+  
+nav:
+  - index.md
+  - cli.md
+  - Wrapper API:
+      - DepositApi: depositapi.md
+      - Enum: enum.md
+#  - Reference:
+#      - Overview: api_reference.md
+#      - API:
+#          - wwpdb.utils.config:
+#              - Overview: api_reference/config/Config.md
+#              - ConfigInfo: api_reference/config/ConfigInfo.md
+#              - ConfigInfoApp: api_reference/config/ConfigInfoApp.md
+#              - ConfigInfoData: api_reference/config/ConfigInfoData.md
+#              - ConfigInfoDataSet: api_reference/config/ConfigInfoDataSet.md
+                  
