@@ -5,6 +5,7 @@ import json
 import logging
 from typing import List, Union, Dict
 from onedep_deposition.deposit_api import DepositApi
+from onedep_deposition.exceptions import InvalidDepositSiteException
 from onedep_deposition.enum import Country, FileType
 from onedep_deposition.__init__ import __version__ as VERSION
 
@@ -113,22 +114,26 @@ def create(api: DepositApi, ctx: Dict, dep_type: str, email: str, users: List[st
     country = get_country_enum(country_string)
     coordinates = not no_coordinates
 
-    if dep_type == "em":
-        deposition = api.create_em_deposition(email, users, country, subtype, coordinates, related_emdb, password)
-    elif dep_type == "xray":
-        deposition = api.create_xray_deposition(email, users, country, password)
-    elif dep_type == "fiber":
-        deposition = api.create_fiber_deposition(email, users, country, password)
-    elif dep_type == "neutron":
-        deposition = api.create_neutron_deposition(email, users, country, password)
-    elif dep_type == "ec":
-        deposition = api.create_ec_deposition(email, users, country, coordinates, password, related_emdb, no_map)
-    elif dep_type == "nmr":
-        deposition = api.create_nmr_deposition(email, users, country, coordinates, password, related_bmrb)
-    elif dep_type == "ssnmr":
-        deposition = api.create_ssnmr_deposition(email, users, country, coordinates, password, related_bmrb)
-    else:
-        raise click.BadParameter("Invalid experiment type, options are: em, xray, fiber, neutron, ec, nmr, ssnmr")
+    try:
+        if dep_type == "em":
+            deposition = api.create_em_deposition(email, users, country, subtype, coordinates, related_emdb, password)
+        elif dep_type == "xray":
+            deposition = api.create_xray_deposition(email, users, country, password)
+        elif dep_type == "fiber":
+            deposition = api.create_fiber_deposition(email, users, country, password)
+        elif dep_type == "neutron":
+            deposition = api.create_neutron_deposition(email, users, country, password)
+        elif dep_type == "ec":
+            deposition = api.create_ec_deposition(email, users, country, coordinates, password, related_emdb, no_map)
+        elif dep_type == "nmr":
+            deposition = api.create_nmr_deposition(email, users, country, coordinates, password, related_bmrb)
+        elif dep_type == "ssnmr":
+            deposition = api.create_ssnmr_deposition(email, users, country, coordinates, password, related_bmrb)
+        else:
+            raise click.BadParameter("Invalid experiment type, options are: em, xray, fiber, neutron, ec, nmr, ssnmr")
+    except InvalidDepositSiteException as e:
+        raise click.ClickException(e)
+
     click.echo(deposition)
 
 
