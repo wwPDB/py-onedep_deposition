@@ -1,6 +1,6 @@
 import logging
 from onedep_deposition.rest_adapter import RestAdapter
-from onedep_deposition.models import DepositStatus, Experiment, Deposit, Depositor, DepositedFile, DepositedFilesSet, DepositError
+from onedep_deposition.models import DepositStatus, Experiment, Deposit, Depositor, DepositedFile, DepositedFilesSet, DepositError, EmMapMetadata
 from onedep_deposition.enum import Country, EMSubType, FileType
 from onedep_deposition.exceptions import DepositApiException, InvalidDepositSiteException
 from onedep_deposition.decorators import handle_invalid_deposit_site
@@ -251,7 +251,8 @@ class DepositApi:
         return True
 
     @handle_invalid_deposit_site
-    def upload_file(self, dep_id: str, file_path: str, file_type: Union[str, FileType], overwrite: bool = False) -> DepositedFile:
+    def upload_file(self, dep_id: str, file_path: str, file_type: Union[str, FileType],
+                    overwrite: bool = False) -> DepositedFile:
         """
         Upload a file in a deposition
         :param dep_id: Deposition id
@@ -291,6 +292,38 @@ class DepositApi:
             response.data["file_id"] = response.data.pop("id")
 
             return DepositedFile(**response.data)
+
+    @handle_invalid_deposit_site
+    def update_metadata(self, dep_id: str, file_id: int, spacing_x: float, spacing_y: float, spacing_z: float,
+                        contour: float, description: str) -> Deposit:
+        """
+        Set metadata in a deposition
+        :param dep_id: Deposition ID
+        :param file_id: File ID
+        :param spacing_x: Pixel spacing X
+        :param spacing_y: Pixel spacing Y
+        :param spacing_z: Pixel spacing Z
+        :param contour: Contour level
+        :param description: Description
+        :return: Deposit
+        """
+
+        data = {
+            "voxel": {
+                "spacing": {
+                    "x": spacing_x,
+                    "y": spacing_y,
+                    "z": spacing_z
+                },
+                "contour": contour
+            },
+            "description": description
+        }
+
+        response = self._rest_adapter.post(f"depositions/{dep_id}/files/{file_id}/metadata", data=data)
+        response.data["file_type"] = response.data.pop("type")
+        response.data["file_id"] = response.data.pop("id")
+        return DepositedFile(**response.data)
 
     @handle_invalid_deposit_site
     def get_files(self, dep_id: str) -> DepositedFilesSet:

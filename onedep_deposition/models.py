@@ -306,13 +306,14 @@ class Depositor:
 
 class DepositedFile:
     """Class representing a deposited file"""
-    def __init__(self, file_id: int, created: str, name: str, file_type: Union[str, FileType], errors: List[str] = None,
-                 warnings: List[str] = None):
+    def __init__(self, file_id: int, created: str, name: str, file_type: Union[str, FileType],
+                 metadata: Dict = None, errors: List[str] = None, warnings: List[str] = None):
         """Constructor for deposited file
         :param file_id:
         :param created:
         :param name:
         :param file_type:
+        :param metadata:
         :param errors:
         :param warnings:
         """
@@ -327,11 +328,18 @@ class DepositedFile:
         else:
             self._type = file_type
 
+        self._metadata = EmMapMetadata(**metadata) if metadata else None
+
         self._errors = [DepositError(**error) for error in errors if error != ""] if errors else []
         self._warnings = [DepositError(**warning) for warning in warnings if warning != ""] if warnings else []
 
     def __str__(self):
-        message = f"ID: {self._id}\nCREATED ON: {self._created}\nNAME: {self._name}\nTYPE: {self._type}\nERRORS:\n"
+        message = f"ID: {self._id}\nCREATED ON: {self._created}\nNAME: {self._name}\nTYPE: {self._type}\n"
+
+        if self._metadata:
+            message += f"METADATA: {self._metadata}\n"
+
+        message += "ERRORS:\n"
         for error in self._errors:
             message += f"  -{error}\n"
         message += "\nWARNINGS:\n"
@@ -363,6 +371,79 @@ class DepositedFile:
     @property
     def warnings(self) -> List[str]:
         return self._warnings
+
+
+class PixelSpacing:
+    """
+    Class representing pixel spacing
+    """
+    def __init__(self, x: float, y: float, z: float):
+        self._x = float(x)
+        self._y = float(y)
+        self._z = float(z)
+
+    @property
+    def x(self) -> float:
+        return self._x
+
+    @property
+    def y(self) -> float:
+        return self._y
+
+    @property
+    def z(self) -> float:
+        return self._z
+
+    def __str__(self):
+        return f"({self._x}, {self._y}, {self._z})"
+
+
+class EmVoxel:
+    """
+    Class representing EM voxel (Pixel sizing and contour level)
+    """
+    def __init__(self, spacing: Union[PixelSpacing, Dict], contour: float):
+        self._contour = float(contour)
+
+        if isinstance(spacing, PixelSpacing):
+            self._spacing = spacing
+        else:
+            self._spacing = PixelSpacing(**spacing)
+
+    @property
+    def spacing(self) -> PixelSpacing:
+        return self._spacing
+
+    @property
+    def contour(self) -> float:
+        return self.contour
+
+    def __str__(self):
+        return f"SPACING: {self._spacing}\nCONTOUR LEVEL: {self._contour}"
+
+
+class EmMapMetadata:
+    """
+    Class representing EM metadata
+    """
+    def __init__(self, voxel: Union[EmVoxel, Dict], description: str = ""):
+        self._description = str(description)
+
+        if isinstance(voxel, EmVoxel):
+            self._voxel = voxel
+        else:
+            self._voxel = EmVoxel(**voxel)
+
+    @property
+    def voxel(self) -> EmVoxel:
+        return self._voxel
+
+    @property
+    def description(self) -> str:
+        return self._description
+
+    def __str__(self):
+        return f"VOXEL: {self._voxel}\nFILE DESCRIPTION: {self._description}"
 
 
 class DepositedFilesSet:
