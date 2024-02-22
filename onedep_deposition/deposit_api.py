@@ -1,6 +1,6 @@
 import logging
 from onedep_deposition.rest_adapter import RestAdapter
-from onedep_deposition.models import DepositStatus, Experiment, Deposit, Depositor, DepositedFile, DepositedFilesSet, DepositError, EmMapMetadata
+from onedep_deposition.models import DepositStatus, Experiment, Deposit, Depositor, DepositedFile, DepositedFilesSet, DepositError
 from onedep_deposition.enum import Country, EMSubType, FileType
 from onedep_deposition.exceptions import DepositApiException, InvalidDepositSiteException
 from onedep_deposition.decorators import handle_invalid_deposit_site
@@ -227,9 +227,9 @@ class DepositApi:
         """
         users = []
         data = []
-        if type(orcid) == str:
+        if type(orcid) is str:
             data.append({'orcid': orcid})
-        elif type(orcid) == list:
+        elif type(orcid) is list:
             for orcid_id in orcid:
                 data.append({'orcid': orcid_id})
         response = self._rest_adapter.post(f"depositions/{dep_id}/users/", data=data)
@@ -267,7 +267,7 @@ class DepositApi:
         if not os.path.exists(file_path):
             raise DepositApiException("Invalid input file", 404)
 
-        if type(file_type) == FileType:
+        if type(file_type) is FileType:
             file_type_str = file_type.value
 
         mime_type, _encoding = mimetypes.guess_type(file_path)

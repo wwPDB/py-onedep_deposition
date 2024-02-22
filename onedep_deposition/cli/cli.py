@@ -263,6 +263,7 @@ def upload(api: DepositApi, ctx: Dict, dep_id: str, file_path: str, file_type: s
     file = api.upload_file(dep_id, file_path, file_type, overwrite)
     click.echo(f"Uploaded file: {file}")
 
+
 @files_group.command(name="metadata", help="Update EM metadata")
 @click.argument("dep_id")
 @click.argument("file_id")
@@ -273,7 +274,10 @@ def upload(api: DepositApi, ctx: Dict, dep_id: str, file_path: str, file_type: s
 @click.option("-d", "--description", "description", help="Description")
 @click.pass_context
 @create_api
-def metadata(api: DepositApi, ctx: Dict, dep_id: str, file_id: int, spacing_x: float, spacing_y: float, spacing_z: float, contour: float, description: str):  # pylint: disable=unused-argument
+def metadata(api: DepositApi, ctx: Dict, dep_id: str, file_id: int,  # pylint: disable=unused-argument
+             spacing_x: float, spacing_y: float,
+             spacing_z: float, contour: float,
+             description: str):  # pylint: disable=unused-argument
     """`Update metadata` command handler"""
     file = api.update_metadata(dep_id, file_id, spacing_x, spacing_y, spacing_z, contour, description)
     click.echo(f"Updated file: {file}")

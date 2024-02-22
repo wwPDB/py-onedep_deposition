@@ -56,11 +56,11 @@ class Experiment:
         self._related_bmrb = str(related_bmrb) if related_bmrb is not None else None
         self._sf_only = bool(sf_only)
 
-        if type(exp_type) == ExperimentType:
+        if type(exp_type) is ExperimentType:
             self._type = exp_type
         elif exp_type:
             self._type = ExperimentType(exp_type)
-        if type(subtype) == EMSubType:
+        if type(subtype) is EMSubType:
             self._subtype = subtype
         elif subtype:
             self._subtype = EMSubType(subtype)
