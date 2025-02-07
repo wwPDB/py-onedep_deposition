@@ -142,8 +142,8 @@ class DepositError:
 
 class Deposit:
     """Class representing an deposit"""
-    def __init__(self, email: str, dep_id: str, entry_id: str, title: str, created: str, last_login: str, site: str,
-                 status: Status, experiments: List = None, errors: List = None, site_url: str = None):
+    def __init__(self, email: str, dep_id: str, pdb_id: str, emdb_id: str, bmrb_id: str, title: str, hold_exp_date: str, created: str, last_login: str, site: str,
+                 status: Status, experiments: List = None, errors: List = None, site_url: str = None, **kwargs):
         """
         Constructor for Deposit
         :param email:
@@ -160,8 +160,11 @@ class Deposit:
         """
         self._email = str(email)
         self._id = str(dep_id)
-        self._entry_id = str(entry_id)
+        self._pdb_id = str(pdb_id) if pdb_id != "?" else None
+        self._emdb_id = str(emdb_id) if emdb_id != "?" else None
+        self._bmrb_id = str(bmrb_id) if bmrb_id != "?" else None
         self._title = str(title)
+        self._hold_exp_date = str(hold_exp_date) if hold_exp_date is not None else None
         self._created = datetime.fromisoformat(created)
         self._last_login = datetime.fromisoformat(last_login)
         self._site = str(site)
@@ -190,12 +193,24 @@ class Deposit:
         return self._id
 
     @property
-    def entry_id(self) -> str:
-        return self._entry_id
+    def pdb_id(self) -> str:
+        return self._pdb_id
+
+    @property
+    def emdb_id(self) -> str:
+        return self._emdb_id
+
+    @property
+    def bmrb_id(self) -> str:
+        return self._bmrb_id
 
     @property
     def title(self) -> str:
         return self._title
+
+    @property
+    def hold_exp_date(self) -> str:
+        return self._hold_exp_date
 
     @property
     def created(self) -> datetime:
@@ -227,7 +242,7 @@ class Deposit:
 
     def __str__(self):
         experiments_text = [str(exp) for exp in self._experiments]
-        return f"ID: {self._id}\nE-mail: {self._email}\nEntry ID: {self._entry_id}\nTitle: {self._title}\nCreated: {self._created}\nLast login: {self._last_login}\nSite: {self._site}\nStatus: {self._status}\nSite URL: {self._site_url}\nExperiments: {experiments_text}\nErrors: {self._errors}"  # noqa: E501
+        return f"ID: {self._id}\nE-mail: {self._email}\nPDB ID: {self._pdb_id}\nEMDB ID: {self._emdb_id}\nBMRB ID: {self._bmrb_id}\nTitle: {self._title}\nHold experiment date: {self._hold_exp_date}\nCreated: {self._created}\nLast login: {self._last_login}\nSite: {self._site}\nStatus: {self._status}\nSite URL: {self._site_url}\nExperiments: {experiments_text}\nErrors: {self._errors}"  # noqa: E501
 
     def json(self):
         json_object = self.__dict__.copy()
