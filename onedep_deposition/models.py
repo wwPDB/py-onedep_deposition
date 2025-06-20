@@ -142,14 +142,17 @@ class DepositError:
 
 class Deposit:
     """Class representing an deposit"""
-    def __init__(self, email: str, dep_id: str, entry_id: str, title: str, created: str, last_login: str, site: str,
+    def __init__(self, email: str, dep_id: str, pdb_id: str, emdb_id: str, bmrb_id: str, title: str, hold_exp_date: str, created: str, last_login: str, site: str,
                  status: Status, experiments: List = None, errors: List = None, site_url: str = None):
         """
         Constructor for Deposit
         :param email:
         :param dep_id:
-        :param entry_id:
+        :param pdb_id:
+        :param emdb_id:
+        :param bmrb_id:
         :param title:
+        :param hold_exp_date:
         :param created:
         :param last_login:
         :param site:
@@ -160,8 +163,11 @@ class Deposit:
         """
         self._email = str(email)
         self._id = str(dep_id)
-        self._entry_id = str(entry_id)
+        self._pdb_id = str(pdb_id)
+        self._emdb_id = str(emdb_id)
+        self._bmrb_id = str(bmrb_id)
         self._title = str(title)
+        self._hold_exp_date = datetime.fromisoformat(hold_exp_date) if hold_exp_date else None
         self._created = datetime.fromisoformat(created)
         self._last_login = datetime.fromisoformat(last_login)
         self._site = str(site)
