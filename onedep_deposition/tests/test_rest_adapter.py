@@ -1,6 +1,6 @@
 import unittest
 import requests
-import mock
+from unittest import mock
 from onedep_deposition.rest_adapter import RestAdapter
 from onedep_deposition.models import Response
 from onedep_deposition.exceptions import DepositApiException

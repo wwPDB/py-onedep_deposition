@@ -279,7 +279,7 @@ class Depositor:
 
         if depositions:
             for deposition in depositions:
-                self._depositions.append(**deposition)
+                self._depositions.append(Deposit(**deposition))
 
     @property
     def orcid(self) -> str:
@@ -431,7 +431,7 @@ class EmVoxel:
 
     @property
     def contour(self) -> float:
-        return self.contour
+        return self._contour
 
     def __str__(self):
         return f"SPACING: {self._spacing}\nCONTOUR LEVEL: {self._contour}"
@@ -469,7 +469,7 @@ class DepositedFilesSet:
         """Constructor for deposited files set"""
         self._files = []
         self._errors = [DepositError(**error) for error in errors if error != ""] if errors else []
-        self._warnings = [DepositError(**warning) for warning in warnings if warning != ""] if errors else []
+        self._warnings = [DepositError(**warning) for warning in warnings if warning != ""] if warnings else []
 
         self.__current_index = 0
 

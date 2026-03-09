@@ -3,7 +3,7 @@ import tempfile
 import logging
 import os
 from onedep_deposition.deposit_api import DepositApi
-from onedep_deposition.models import Experiment, Deposit, Depositor, DepositedFile, DepositedFilesSet, DepositStatus
+from onedep_deposition.models import Experiment, Deposit, Depositor, DepositedFile, DepositedFilesSet, DepositStatus, EmVoxel, PixelSpacing
 from onedep_deposition.enum import Country, EMSubType, FileType
 from onedep_deposition.exceptions import DepositApiException
 from unittest.mock import Mock
@@ -30,8 +30,11 @@ class DepositApiTests(unittest.TestCase):
         self.deposition_mocked_data = {
             "id": self.dep_id,
             "email": self.email,
-            "entry_id": "?",
+            "pdb_id": "?",
+            "emdb_id": "?",
+            "bmrb_id": "?",
             "title": "?",
+            "hold_exp_date": None,
             "created": "2023-03-23T14:19:43.850522",
             "last_login": "2023-03-23T14:19:43.850349",
             "site": "PDBe",
@@ -205,6 +208,34 @@ class DepositApiTests(unittest.TestCase):
     def tearDown(self):
         # Clean up any resources used in the tests
         pass
+
+
+class ModelBugRegressionTests(unittest.TestCase):
+    """Regression tests for bugs fixed in models.py"""
+
+    def test_em_voxel_contour_property_no_recursion(self):
+        # EmVoxel.contour previously returned self.contour (infinite recursion)
+        spacing = PixelSpacing(x=1.0, y=1.0, z=1.0)
+        voxel = EmVoxel(spacing=spacing, contour=2.5)
+        self.assertEqual(voxel.contour, 2.5)
+
+    def test_deposited_files_set_warnings_not_discarded_when_errors_empty(self):
+        # DepositedFilesSet._warnings previously used `if errors` as its guard,
+        # so warnings were silently dropped whenever errors was empty/None.
+        data = {
+            "files": [],
+            "errors": [],
+            "warnings": [{"code": "w1", "message": "test warning"}]
+        }
+        file_set = DepositedFilesSet(**data)
+        self.assertEqual(len(file_set.warnings), 1)
+        self.assertEqual(file_set.warnings[0].code, "w1")
+
+    def test_deposited_files_set_warnings_none_errors_none(self):
+        # Both absent should produce empty lists without error
+        file_set = DepositedFilesSet(files=[], errors=None, warnings=None)
+        self.assertEqual(len(file_set.errors), 0)
+        self.assertEqual(len(file_set.warnings), 0)
 
 
 if __name__ == '__main__':
