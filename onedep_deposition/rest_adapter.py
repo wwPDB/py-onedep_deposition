@@ -12,7 +12,7 @@ class RestAdapter:
                  logger: logging.Logger = None):
         """
         Constructor for RestAdapter
-        :param hostname: Normally, api.thecatapi.com
+        :param hostname: Base URL of the OneDep deposition site (e.g. https://deposit.wwpdb.org/deposition)
         :param api_key: (optional) string used for authentication when POSTing or DELETEing
         :param ver: always v1
         :param ssl_verify: Normally set to True, but if having SSL/TLS cert validation issues, can turn off with False

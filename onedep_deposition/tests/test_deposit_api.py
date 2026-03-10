@@ -211,9 +211,6 @@ class DepositApiTests(unittest.TestCase):
         self.assertIsInstance(status, DepositStatus)
         self.assertEqual(status.status, "running")
 
-    def tearDown(self):
-        # Clean up any resources used in the tests
-        pass
 
 
 class ModelBugRegressionTests(unittest.TestCase):

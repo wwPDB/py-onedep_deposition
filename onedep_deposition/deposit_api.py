@@ -30,7 +30,7 @@ class DepositApi:
         self._redirect = redirect
 
         if not hostname:
-            # Default hostname is RCSB until a deposition is created
+            # Default hostname is wwPDB; may be redirected after deposition creation
             hostname = "https://deposit.wwpdb.org/deposition"
 
         self._connect(hostname)

@@ -135,18 +135,18 @@ Before anything else, three runtime bugs and a broken test fixture must be fixed
 
 ### Tasks
 
-- [ ] **4.1** Update README to use the installed entry point
+- [x] **4.1** Update README to use the installed entry point
   - **What:** Replace all occurrences of `python cli.py <command>` in README.md with `onedep-deposition <command>`. Update the example commands accordingly.
   - **Why:** The README is the primary user-facing document; showing a stale invocation immediately frustrates new users.
   - **Files:** `README.md`
   - **Done when:** Every example command in the README uses `onedep-deposition`.
 
-- [ ] **4.2** Remove duplicate file type entries from README
+- [x] **4.2** Remove duplicate file type entries from README
   - **What:** Deduplicate the file type list under "Files" in README.md. `co-cif`, `vo-map`, `img-emdb`, `add-map`, `mask-map`, `half-map`, `xs-cif`, and `xs-mtz` each appear multiple times.
   - **Files:** `README.md`
   - **Done when:** Each file type appears exactly once in the list.
 
-- [ ] **4.3** Clean up stale template artefacts
+- [x] **4.3** Clean up stale template artefacts
   - **What:**
     - Fix `tox.ini` `flake_exclude_paths` and `black_exclude_paths` to remove `wwpdb/io/...` paths that don't exist.
     - Fix `RestAdapter.__init__` docstring: replace "Normally, api.thecatapi.com" with a description of the actual parameter.
@@ -154,13 +154,13 @@ Before anything else, three runtime bugs and a broken test fixture must be fixed
   - **Files:** `tox.ini`, `rest_adapter.py`, `deposit_api.py`
   - **Done when:** No stale references to unrelated projects or services remain.
 
-- [ ] **4.4** Align `requires-python` with tested versions
+- [x] **4.4** Align `requires-python` with tested versions
   - **What:** Update `pyproject.toml` to set `requires-python = ">=3.9"` (matching the minimum in the tox matrix) or expand the tox matrix to actually test 3.6–3.8.
   - **Why:** Claiming 3.6 support that is never tested is a false promise.
   - **Files:** `pyproject.toml`, `tox.ini`
   - **Done when:** The stated minimum Python version matches the lowest version in the test matrix.
 
-- [ ] **4.5** Remove the no-op `tearDown` method from tests
+- [x] **4.5** Remove the no-op `tearDown` method from tests
   - **What:** Delete the `tearDown(self): pass` method in `DepositApiTests`.
   - **Files:** `onedep_deposition/tests/test_deposit_api.py`
   - **Done when:** The method is gone; tests still pass.
