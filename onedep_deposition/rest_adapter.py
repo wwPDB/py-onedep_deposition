@@ -27,7 +27,7 @@ class RestAdapter:
         self._ssl_verify = ssl_verify
         self._timeout = timeout
         if not ssl_verify:
-            requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+            requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)  # pylint: disable=no-member
         self._session = requests.Session()
         self._session.headers['Authorization'] = f"Bearer {self._api_key}"
         self._session.verify = self._ssl_verify

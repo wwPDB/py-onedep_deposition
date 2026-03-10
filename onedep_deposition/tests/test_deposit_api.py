@@ -137,18 +137,24 @@ class DepositApiTests(unittest.TestCase):
             self.assertEqual(user.orcid, self.orcids[0], "Deposit ID is not correct")
 
     def test_add_multiple_users(self):
-        # Test addition of a multiple users
+        # Test that passing a list of ORCIDs sends the correct payload and parses both users
         user1 = self.user.copy()
         user2 = self.user.copy()
         user2["id"] = 2
         user2["orcid"] = self.orcids[1]
-        self.deposit_api.rest_adapter.post = Mock(return_value=Mock(status_code=200, data=[user1, user2]))
-        users = self.deposit_api.add_user(self.dep_id, self.orcids[0])
+        mock_post = Mock(return_value=Mock(status_code=200, data=[user1, user2]))
+        self.deposit_api.rest_adapter.post = mock_post
+        users = self.deposit_api.add_user(self.dep_id, self.orcids)
+        # Verify the payload sent to the adapter contains both ORCIDs
+        mock_post.assert_called_once()
+        call_data = mock_post.call_args.kwargs.get("data") or mock_post.call_args[1].get("data")
+        self.assertEqual(call_data, [{"orcid": self.orcids[0]}, {"orcid": self.orcids[1]}])
+        # Verify both users are returned and parsed correctly
         self.assertEqual(len(users), 2, "Number of users is incorrect")
         for i, user in enumerate(users):
             self.assertIsInstance(user, Depositor, "User was not added successfully")
-            self.assertEqual(user.user_id, i + 1, "Deposit ID is not correct")
-            self.assertEqual(user.orcid, self.orcids[i], "Deposit ID is not correct")
+            self.assertEqual(user.user_id, i + 1, "User ID is not correct")
+            self.assertEqual(user.orcid, self.orcids[i], "ORCID is not correct")
 
     def test_upload_file_success(self):
         _, file_path = tempfile.mkstemp()

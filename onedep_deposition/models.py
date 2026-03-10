@@ -5,7 +5,7 @@ from datetime import datetime
 
 class Response:
     """Class representing an API response"""
-    def __init__(self, status_code: int, message: str = '', data: List[Dict] = None):
+    def __init__(self, status_code: int, message: str = '', data: Union[Dict, List] = None):
         """
         Constructor for Response
         :param status_code: Response status code
@@ -25,7 +25,7 @@ class Response:
         return self._message
 
     @property
-    def data(self) -> List[Dict]:
+    def data(self) -> Union[Dict, List]:
         return self._data
 
     def __str__(self):
@@ -56,11 +56,11 @@ class Experiment:
         self._related_bmrb = str(related_bmrb) if related_bmrb is not None else None
         self._sf_only = bool(sf_only)
 
-        if type(exp_type) is ExperimentType:
+        if isinstance(exp_type, ExperimentType):
             self._type = exp_type
         elif exp_type:
             self._type = ExperimentType(exp_type)
-        if type(subtype) is EMSubType:
+        if isinstance(subtype, EMSubType):
             self._subtype = subtype
         elif subtype:
             self._subtype = EMSubType(subtype)

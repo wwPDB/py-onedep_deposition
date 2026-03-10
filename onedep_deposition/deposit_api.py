@@ -220,9 +220,9 @@ class DepositApi:
         """
         users = []
         data = []
-        if type(orcid) is str:
+        if isinstance(orcid, str):
             data.append({'orcid': orcid})
-        elif type(orcid) is list:
+        elif isinstance(orcid, list):
             for orcid_id in orcid:
                 data.append({'orcid': orcid_id})
         response = self._rest_adapter.post(f"depositions/{dep_id}/users/", data=data)

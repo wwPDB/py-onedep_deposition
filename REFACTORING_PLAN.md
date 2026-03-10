@@ -87,7 +87,7 @@ Before anything else, three runtime bugs and a broken test fixture must be fixed
 
 ### Tasks
 
-- [ ] **3.1** Replace `type(x) is Y` with `isinstance(x, Y)`
+- [x] **3.1** Replace `type(x) is Y` with `isinstance(x, Y)`
   - **What:** Update all four occurrences:
     - `deposit_api.py:230` — `type(orcid) is str` → `isinstance(orcid, str)`
     - `deposit_api.py:232` — `type(orcid) is list` → `isinstance(orcid, list)`
@@ -97,31 +97,31 @@ Before anything else, three runtime bugs and a broken test fixture must be fixed
   - **Files:** `onedep_deposition/deposit_api.py`, `onedep_deposition/models.py`
   - **Done when:** No `type(` calls remain in the source; tests pass.
 
-- [ ] **3.2** Add `@functools.wraps` to the `create_api` CLI decorator
+- [x] **3.2** Add `@functools.wraps` to the `create_api` CLI decorator
   - **What:** Import `functools` in cli.py and add `@functools.wraps(func)` to the inner `decorator` function inside `create_api`.
   - **Why:** Without it, Click cannot read the decorated function's name or docstring for `--help` output.
   - **Files:** `onedep_deposition/cli/cli.py`
   - **Done when:** `onedep-deposition deposition create --help` shows the correct help text.
 
-- [ ] **3.3** Fix `Response.data` type annotation
+- [x] **3.3** Fix `Response.data` type annotation
   - **What:** Change the return type of the `data` property from `List[Dict]` to `Union[Dict, List, None]` (or `Any` as a conservative choice). Update the constructor annotation for the `data` parameter similarly.
   - **Why:** The annotation is actively wrong — callers do dict-style access on it — and will produce false IDE/mypy warnings.
   - **Files:** `onedep_deposition/models.py`
   - **Done when:** No type-checker errors are produced when accessing `response.data["dep_id"]`.
 
-- [ ] **3.4** Scope SSL warning suppression to the specific warning class
+- [x] **3.4** Scope SSL warning suppression to the specific warning class
   - **What:** Replace `requests.packages.urllib3.disable_warnings()` with `requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)`.
   - **Why:** The current call silences *all* urllib3 warnings globally in the process. The scoped version only suppresses the expected InsecureRequestWarning.
   - **Files:** `onedep_deposition/rest_adapter.py`
   - **Done when:** Only `InsecureRequestWarning` is suppressed when `ssl_verify=False`.
 
-- [ ] **3.5** Add user-facing warning when SSL verification is disabled
+- [x] **3.5** Add user-facing warning when SSL verification is disabled
   - **What:** In the CLI `create_api` decorator (cli.py:55), add `click.echo("WARNING: SSL verification is disabled.", err=True)` when `no_ssl_verify` is True.
   - **Why:** The flag is easy to leave on accidentally; a visible warning reduces the chance of that happening in production.
   - **Files:** `onedep_deposition/cli/cli.py`
   - **Done when:** Running any command with `--no_ssl_verify` prints the warning to stderr.
 
-- [ ] **3.6** Fix the `test_add_multiple_users` test to actually test multi-user input
+- [x] **3.6** Fix the `test_add_multiple_users` test to actually test multi-user input
   - **What:** Add a separate test case that calls `add_user(dep_id, [orcid1, orcid2])` (list input) and asserts that the POST body sent to the adapter contains both ORCIDs.
   - **Why:** The existing test only verifies response parsing for two items, not that two ORCIDs in the input are correctly serialised.
   - **Files:** `onedep_deposition/tests/test_deposit_api.py`

@@ -1,4 +1,5 @@
 import click
+import functools
 import re
 import os
 import json
@@ -41,6 +42,7 @@ def get_file_type_enum(file_type_string: str):
 
 def create_api(func):
     """Decorator to create the API object"""
+    @functools.wraps(func)
     def decorator(ctx, *args, **kwargs):
         hostname = ctx.obj["hostname"]
         no_ssl_verify = ctx.obj["no_ssl_verify"]
@@ -52,6 +54,7 @@ def create_api(func):
         if hostname:
             api_args["hostname"] = hostname
         if no_ssl_verify:
+            click.echo("WARNING: SSL verification is disabled.", err=True)
             api_args["ssl_verify"] = False
         else:
             api_args["ssl_verify"] = True
