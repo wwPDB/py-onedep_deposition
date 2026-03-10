@@ -2,7 +2,7 @@ import logging
 from onedep_deposition.rest_adapter import RestAdapter
 from onedep_deposition.models import DepositStatus, Experiment, Deposit, Depositor, DepositedFile, DepositedFilesSet, DepositError
 from onedep_deposition.enum import Country, EMSubType, FileType
-from onedep_deposition.exceptions import DepositApiException, InvalidDepositSiteException
+from onedep_deposition.exceptions import DepositApiException
 from onedep_deposition.decorators import handle_invalid_deposit_site
 from typing import List, Union, Dict
 import mimetypes
@@ -60,14 +60,7 @@ class DepositApi:
         }
         if password:
             data["password"] = password
-        try:
-            response = self._rest_adapter.post("depositions/new", data=data)
-        except InvalidDepositSiteException as e:
-            if self._redirect:
-                self._connect(e.site)
-                response = self._rest_adapter.post("depositions/new", data=data)
-            else:
-                raise e
+        response = self._rest_adapter.post("depositions/new", data=data)
         response.data["dep_id"] = response.data.pop("id")
         deposit = Deposit(**response.data)
         return deposit

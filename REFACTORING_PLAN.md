@@ -61,19 +61,19 @@ Before anything else, three runtime bugs and a broken test fixture must be fixed
 
 ### Tasks
 
-- [ ] **2.1** Remove duplicate redirect handling from `create_deposition`
+- [x] **2.1** Remove duplicate redirect handling from `create_deposition`
   - **What:** Remove the `try/except InvalidDepositSiteException` block inside `create_deposition` (deposit_api.py:63–69). The `@handle_invalid_deposit_site` decorator already handles this on the method. The internal handler also means the decorator never fires for `create_deposition`, breaking symmetry with all other methods.
   - **Why:** Two retry paths for the same exception on the same method is confusing and makes the redirect behaviour inconsistent across the class.
   - **Files:** `onedep_deposition/deposit_api.py`
   - **Done when:** `create_deposition` has no internal `try/except InvalidDepositSiteException`, and existing redirect tests (if any) still pass.
 
-- [ ] **2.2** Fix `RestAdapter.hostname` setter to update `self._hostname`
+- [x] **2.2** Fix `RestAdapter.hostname` setter to update `self._hostname`
   - **What:** Add `self._hostname = hostname` inside the `hostname` setter (rest_adapter.py:41–47) before the `self.url` update.
   - **Why:** The setter updates `self.url` but not `self._hostname`, so reading `adapter.hostname` after assigning it still returns the old value.
   - **Files:** `onedep_deposition/rest_adapter.py`
   - **Done when:** `adapter.hostname = "http://new-host"` followed by `adapter.hostname` returns `"http://new-host"`.
 
-- [ ] **2.3** Introduce `requests.Session` in `RestAdapter`
+- [x] **2.3** Introduce `requests.Session` in `RestAdapter`
   - **What:** Create a `requests.Session` in `RestAdapter.__init__`, set the `Authorization` header on it, and replace the `requests.request(...)` calls in `_do` with `self._session.request(...)`. Pass `verify=self._ssl_verify` to the session or per-request.
   - **Why:** A session reuses TCP connections and TLS sessions across multiple API calls, which is significant for workflows that upload many files.
   - **Files:** `onedep_deposition/rest_adapter.py`

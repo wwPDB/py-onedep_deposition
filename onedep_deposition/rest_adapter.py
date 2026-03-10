@@ -28,6 +28,9 @@ class RestAdapter:
         self._timeout = timeout
         if not ssl_verify:
             requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+        self._session = requests.Session()
+        self._session.headers['Authorization'] = f"Bearer {self._api_key}"
+        self._session.verify = self._ssl_verify
 
     @property
     def hostname(self) -> str:
@@ -44,6 +47,7 @@ class RestAdapter:
         :param hostname: hostname
         :return: None
         """
+        self._hostname = hostname
         self.url = "{}/api/{}/".format(hostname, self._version)
 
     def _do(self, http_method: str, endpoint: str, params: Dict = None, data: Union[Dict, List] = None, files: Dict = None, content_type: str = "application/json") -> Response:
@@ -58,21 +62,19 @@ class RestAdapter:
         :return: API Response
         """
         full_url = self.url + endpoint
-        headers = {
-            'Authorization': f"Bearer {self._api_key}"
-        }
+        headers = {}
         if content_type:
             headers["Content-Type"] = content_type
         log_line_pre = f"method={http_method}, url={full_url}, params={params}"
         log_line_post = ', '.join((log_line_pre, "success={}, status_code={}, message={}"))
         try:
             self._logger.debug(msg=log_line_pre)
-            if 'Content-Type' in headers and headers['Content-Type'] == 'application/json':
-                response = requests.request(method=http_method, url=full_url, verify=self._ssl_verify, headers=headers,
-                                            params=params, json=data, files=files, timeout=self._timeout)
+            if content_type == 'application/json':
+                response = self._session.request(method=http_method, url=full_url, headers=headers,
+                                                 params=params, json=data, files=files, timeout=self._timeout)
             else:
-                response = requests.request(method=http_method, url=full_url, verify=self._ssl_verify, headers=headers,
-                                            params=params, data=data, files=files, timeout=self._timeout)
+                response = self._session.request(method=http_method, url=full_url, headers=headers,
+                                                 params=params, data=data, files=files, timeout=self._timeout)
         except requests.exceptions.RequestException as e:
             self._logger.error(msg=(str(e)))
             raise DepositApiException("Failed to access the API", 403) from e
